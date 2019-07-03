@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                         Manifest.permission.SEND_SMS})
                 .check();
     }
-
+    //test1
     public void initView(){
         //Initializing the TabLayout;
         tabs = findViewById(R.id.tabs);
