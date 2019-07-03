@@ -70,7 +70,7 @@ public class TabFragment1 extends Fragment {
                         }
                         else {
                             Intent intent = new Intent(context, PhoneBookActivity.class);
-                            RecyclerItem item = datas.get(position);
+                            RecyclerItem item = datas.get(position);//
                             intent.putExtra("select", item);
                             startActivityForResult(intent, 0);
                         }
