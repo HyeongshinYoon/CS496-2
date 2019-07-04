@@ -20,12 +20,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
@@ -57,6 +59,32 @@ public class TabFragment1 extends Fragment {
         resetData();
 
         enableSwipe();
+
+        final FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                //layoutManager.scrollToPositionWithOffset(0,0);
+                //recyclerView.smoothScrollToPosition(0);
+                recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView,new RecyclerView.State(), 0);
+
+
+            }
+        });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy==0){
+                    fab.hide();
+
+                }else {
+                    fab.show();
+                }
+            }
+        });
+
         recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(context.getApplicationContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
@@ -70,7 +98,7 @@ public class TabFragment1 extends Fragment {
                         }
                         else {
                             Intent intent = new Intent(context, PhoneBookActivity.class);
-                            RecyclerItem item = datas.get(position);//
+                            RecyclerItem item = datas.get(position);
                             intent.putExtra("select", item);
                             startActivityForResult(intent, 0);
                         }
@@ -143,6 +171,9 @@ public class TabFragment1 extends Fragment {
         datas = refreshData();
         adapter = new Tab1Adapter(context, datas);
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
+        //layoutManager.scrollToPositionWithOffset(0,0);
+        recyclerView.setLayoutManager(layoutManager);
+
     }
 }
