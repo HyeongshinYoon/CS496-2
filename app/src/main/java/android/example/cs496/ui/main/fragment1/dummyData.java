@@ -23,7 +23,6 @@ public class dummyData {
 
     static JSONArray personArray;
     static List<RecyclerItem> datas = new ArrayList<>();
-    private static int numData = 0;
     private static int lastNum = 0;
 
     /*public dummyData() throws JSONException {
@@ -156,10 +155,11 @@ public class dummyData {
 
             data = new RecyclerItem(id, name, img, phone, group, email);
             datas.add(data);
+
+            if(lastNum < id) lastNum = id + 1;
         }
         //이름순 정렬 - sort (RecyclerItem)
         Collections.sort(datas);
-        lastNum = numData = getCountData();
     }
 
     public static int getCountData(){
@@ -197,7 +197,6 @@ public class dummyData {
             }
         }
         datas.remove(real_position);
-        numData = datas.size();
     }
 
     public static void insertData(RecyclerItem new_item) {
@@ -208,7 +207,5 @@ public class dummyData {
         lastNum += 1;
         datas.add(new_item);
         Collections.sort(datas);
-        numData = datas.size();
     }
-
 }

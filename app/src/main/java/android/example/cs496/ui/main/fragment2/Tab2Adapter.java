@@ -2,6 +2,7 @@ package android.example.cs496.ui.main.fragment2;
 
 import android.app.ActionBar;
 import android.content.Context;
+import android.example.cs496.MainActivity;
 import android.example.cs496.R;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
@@ -21,23 +22,21 @@ import android.widget.ImageView;
 
 public class Tab2Adapter extends BaseAdapter {
     //private Bitmap[] picArr;
-    private int[] picArr;
     private LayoutInflater inf;
     private Context context;
     GridViewHolder viewHolder;
 
     //    public Tab2Adapter(LayoutInflater inflater, Bitmap[] picArr) {
     public Tab2Adapter(Context context, LayoutInflater inflater, int[] picArr) {
-        this.picArr = picArr;
         this.inf = inflater;
         this.context = context;
     }
 
     @Override
-    public int getCount() {return picArr.length;}
+    public int getCount() {return MainActivity.picArr.length;}
 
     @Override
-    public Object getItem(int position) {return picArr[position];}
+    public Object getItem(int position) {return MainActivity.picArr[position];}
 
     @Override
     public long getItemId(int position) {return position;}
@@ -45,10 +44,8 @@ public class Tab2Adapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-
-
         // 캐시된 뷰가 없을 경우 새로 생성하고 뷰홀더를 생성한다.
-        if (convertView==null) {
+        if (convertView == null) {
             convertView = inf.inflate(R.layout.griditem, parent, false);
             viewHolder = new GridViewHolder();
             if (position==0) {
@@ -63,8 +60,9 @@ public class Tab2Adapter extends BaseAdapter {
             viewHolder = (GridViewHolder) convertView.getTag();
         }
 
+        viewHolder.img.setImageURI(MainActivity.imageList.get(position));
         if (position==0) {
-            viewHolder.img.setImageResource(picArr[position]);
+            viewHolder.img.setImageResource(MainActivity.picArr[position]);
             int colorPrimaryLight = context.getResources().getColor(R.color.colorPrimaryLight);
             OvalShape ovalShape = new OvalShape();
             ovalShape.resize(30, 30);
@@ -74,7 +72,7 @@ public class Tab2Adapter extends BaseAdapter {
             viewHolder.img.setClipToOutline(true);
             viewHolder.img.setScaleType(ImageView.ScaleType.CENTER);
         }
-        if (position!=0) {viewHolder.img.setImageResource(picArr[position]);}
+        if (position!=0) {viewHolder.img.setImageResource(MainActivity.picArr[position]);}
         return convertView;
     }
 }

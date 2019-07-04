@@ -59,55 +59,10 @@ exports.updatePhone = function(req, res){
 
 exports.deletePhone = function(req, res){
 
-  User.remove({id:req.params.id}, function(err){
+  User.deleteOne({id:req.params.id}, function(err){
       if(err){
         res.send(err)
       }
       res.json({message:"The user was deleted"});
   })
 }
-
-
-
-// Find All
-// router.get('/', (req, res) => {
-//   Phone.findAll()
-//     .then((phones) => {
-//       if (!phones.length) return res.status(404).send({ err: 'Phone not found' });
-//       res.send(`find successfully: ${phones}`);
-//     })
-//     .catch(err => res.status(500).send(err));
-// });
-
-// // Find One by phoneid
-// router.get('/phoneid/:phoneid', (req, res) => {
-//   Phone.findOneByPhoneid(req.params.phoneid)
-//     .then((phone) => {
-//       if (!phone) return res.status(404).send({ err: 'Phone not found' });
-//       res.send(`findOne successfully: ${phone}`);
-//     })
-//     .catch(err => res.status(500).send(err));
-// });
-
-// // Create new phone document
-// router.post('/', (req, res) => {
-//   Phone.create(req.body)
-//     .then(phone => res.send(phone))
-//     .catch(err => res.status(500).send(err));
-// });
-
-// // Update by phoneid
-// router.put('/phoneid/:phoneid', (req, res) => {
-//   Phone.updateByPhoneid(req.params.phoneid, req.body)
-//     .then(phone => res.send(phone))
-//     .catch(err => res.status(500).send(err));
-// });
-
-// // Delete by phoneid
-// router.delete('/phoneid/:phoneid', (req, res) => {
-//   Phone.deleteByPhoneid(req.params.phoneid)
-//     .then(() => res.sendStatus(200))
-//     .catch(err => res.status(500).send(err));
-// });
-
-// module.exports = router;

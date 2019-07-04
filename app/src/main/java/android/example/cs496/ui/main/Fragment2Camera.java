@@ -19,7 +19,7 @@ public class Fragment2Camera extends AppCompatActivity {
     private TextureView mCameraTextureView;
     private Preview mPreview;
 
-    Activity mainActivity = this;
+    Activity mainActivity = null;
 
     private static final String TAG = "Fragment2Camera";
 
@@ -29,7 +29,7 @@ public class Fragment2Camera extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-
+        mainActivity = this;
         mCameraTextureView = (TextureView) findViewById(R.id.cameraTextureView);
         mPreview = new Preview(this, mCameraTextureView);
 

@@ -7,6 +7,7 @@ import android.example.cs496.ui.main.TabFragment1;
 import android.example.cs496.ui.main.TabFragment2;
 import android.example.cs496.ui.main.TabFragment3;
 import android.example.cs496.ui.main.fragment1.dummyData;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,13 +53,19 @@ public class MainActivity extends AppCompatActivity {
     SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
     private TextView mResult;
 
+    public static ArrayList<Uri> imageList = new ArrayList<>();
+    public static int[] picArr = {R.drawable.add_camera, R.drawable.cat, R.drawable.tree, R.drawable.sunflower, R.drawable.rose, R.drawable.panda,
+            R.drawable.heart, R.drawable.google, R.drawable.tiger, R.drawable.dog, R.drawable.chiba3, R.drawable.chiba,
+            R.drawable.girl, R.drawable.fruit, R.drawable.beach, R.drawable.bird, R.drawable.chiba2, R.drawable.yun2,
+            R.drawable.yun3, R.drawable.yun4, R.drawable.yun5, R.drawable.iu, R.drawable.view, R.drawable.goeun_img1,
+            R.drawable.goeun_img2};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermissions();
-        mResult = (TextView) findViewById(R.id.test);
 
         //new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
         //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone");
@@ -224,7 +231,6 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
-            mResult.setText(result);
             if(progressDialog != null) {
                 progressDialog.dismiss();
             }
@@ -306,7 +312,6 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
-            mResult.setText(result);
             System.out.println("update"+result);
 
             if(progressDialog != null){
@@ -383,7 +388,6 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
-            mResult.setText(result);
             System.out.println("delete"+result);
             if(progressDialog != null){
                 progressDialog.dismiss();

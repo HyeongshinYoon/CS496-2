@@ -5,9 +5,10 @@ var express = require("express");
 var bodyParser = require("body-Parser");
 var mongoose = require("mongoose");
 var phoneController = require("./routes/phones");
+var galleryController = require("./routes/gallerys");
 
 
-mongoose.connect('mongodb://localhost:27017/phones', { useNewUrlParser: true });
+mongoose.connect('mongodb://localhost:27017/week2', { useNewUrlParser: true });
 
 var app = express();
 
@@ -19,6 +20,8 @@ app.use(bodyParser.json());
 var router = express.Router();
 
 app.use("/api", router);
+// app.use("/", phoneController);
+// app.use("/gallery", galleryController);
 
 router.route("/phones").get(phoneController.getPhones);
 
@@ -29,6 +32,14 @@ router.route("/addPhone").post(phoneController.addPhone);
 router.route("/updatePhone/:id").post(phoneController.updatePhone);
 
 router.route("/deletePhone/:id").get(phoneController.deletePhone);
+
+router.route("/photos").get(galleryController.getPhotos);
+
+router.route("/photo/:photoId").get(galleryController.getPhoto);
+
+router.route("/addPhoto").post(galleryController.addPhoto);
+
+router.route("/deletePhoto/:photoId").get(galleryController.deletePhoto);
 
 app.listen(3000);
 // const app = express();
