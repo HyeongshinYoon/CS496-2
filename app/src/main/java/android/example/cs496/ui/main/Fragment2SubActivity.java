@@ -1,6 +1,7 @@
 package android.example.cs496.ui.main;
 
 import android.content.Intent;
+import android.example.cs496.MainActivity;
 import android.example.cs496.R;
 import android.example.cs496.ui.main.fragment2.SubFragment2Adapter;
 import android.os.Bundle;
@@ -32,12 +33,13 @@ public class Fragment2SubActivity extends AppCompatActivity {
         //PagerAdapter를 상속받은 CustomAdapter 객체 생성
         //CustomAdapter에게 LayoutInflater 객체 전달
 
-        SubFragment2Adapter adapter= new SubFragment2Adapter(getLayoutInflater());
-        //ViewPager에 Adapter 설정
+        SubFragment2Adapter adapter= new SubFragment2Adapter(getLayoutInflater(), MainActivity.imageList);
+//        //ViewPager에 Adapter 설정
         pager.setAdapter(adapter);
         pager.setCurrentItem(position, true);
 //        setContentView(R.layout.tab_fragment2_zoominout);
 //        PhotoView photoView = findViewById(R.id.photoView);
+//        photoView.setImageURI(MainActivity.imageList.get(position));
 //        photoView.setImageResource(picArr[position]);
     }
 }

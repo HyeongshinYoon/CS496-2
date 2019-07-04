@@ -11,6 +11,7 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RectShape;
 import android.media.Image;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,26 +21,32 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+
 public class Tab2Adapter extends BaseAdapter {
     //private Bitmap[] picArr;
+    private ArrayList<Uri> mData;
     private LayoutInflater inf;
     private Context context;
     GridViewHolder viewHolder;
 
     //    public Tab2Adapter(LayoutInflater inflater, Bitmap[] picArr) {
-    public Tab2Adapter(Context context, LayoutInflater inflater, int[] picArr) {
+    public Tab2Adapter(Context context, LayoutInflater inflater, ArrayList<Uri> data) {
         this.inf = inflater;
         this.context = context;
+        this.mData = data;
     }
 
     @Override
-    public int getCount() {return MainActivity.picArr.length;}
+    public int getCount() {return mData.size();}
 
     @Override
-    public Object getItem(int position) {return MainActivity.picArr[position];}
+    public Object getItem(int position) {return mData.get(position);}
 
     @Override
-    public long getItemId(int position) {return position;}
+    public long getItemId(int i) {
+        return i;
+    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -60,9 +67,8 @@ public class Tab2Adapter extends BaseAdapter {
             viewHolder = (GridViewHolder) convertView.getTag();
         }
 
-        viewHolder.img.setImageURI(MainActivity.imageList.get(position));
         if (position==0) {
-            viewHolder.img.setImageResource(MainActivity.picArr[position]);
+            viewHolder.img.setImageResource(R.drawable.add_camera);
             int colorPrimaryLight = context.getResources().getColor(R.color.colorPrimaryLight);
             OvalShape ovalShape = new OvalShape();
             ovalShape.resize(30, 30);
@@ -71,8 +77,9 @@ public class Tab2Adapter extends BaseAdapter {
             bgShape.setTint(colorPrimaryLight);
             viewHolder.img.setClipToOutline(true);
             viewHolder.img.setScaleType(ImageView.ScaleType.CENTER);
-        }
-        if (position!=0) {viewHolder.img.setImageResource(MainActivity.picArr[position]);}
+        }else
+            viewHolder.img.setImageURI(MainActivity.imageList.get(position));
+//        if (position!=0) {viewHolder.img.setImageResource(MainActivity.picArr[position]);}
         return convertView;
     }
 }

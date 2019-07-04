@@ -60,7 +60,7 @@ public class TabFragment2 extends Fragment{
         final View view = inflater.inflate(R.layout.tab_fragment2, container, false);
 
         gridView = view.findViewById(R.id.gridView1);
-        adapter = new Tab2Adapter(mContext, inflater, MainActivity.picArr);
+        adapter = new Tab2Adapter(mContext, inflater, MainActivity.imageList);
         gridView.setAdapter(adapter);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener(){

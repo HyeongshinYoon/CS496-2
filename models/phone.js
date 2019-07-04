@@ -10,7 +10,7 @@ var phoneSchema = new mongoose.Schema({
   },
   img: {
     type:String,
-    default:"",
+    default:null,
   },
   phone: {
     type:String,

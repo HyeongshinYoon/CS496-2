@@ -140,7 +140,8 @@ public class dummyData {
             if(jObject.isNull("img")){
                 img = R.drawable.ic_launcher_foreground_primarylight;
             }else {
-                img = jObject.getInt("img");
+                img = R.drawable.ic_launcher_foreground_primarylight;
+                //img = jObject.getInt("img");
             }
             if(jObject.isNull("group")){
                 group = "";
@@ -162,10 +163,6 @@ public class dummyData {
         Collections.sort(datas);
     }
 
-    public static int getCountData(){
-        return datas.size();
-    }
-
     public static List<RecyclerItem> refreshData() {
         Collections.sort(datas);
         return datas;
@@ -183,6 +180,18 @@ public class dummyData {
         }
         datas.remove(real_position);
         datas.add(new_item);
+        new MainActivity.PostDataTask().execute("http://143.248.36.220:3000/api/addPhone");
+        JSONObject dataToSend = new JSONObject();
+        try {
+            dataToSend.put("id", new_item.getId());
+            dataToSend.put("name", new_item.getName());
+            dataToSend.put("phone", new_item.getPhone());
+            dataToSend.put("group", new_item.getGroup());
+            dataToSend.put("img", new_item.getImg());
+            dataToSend.put("email", new_item.getEmail());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         Collections.sort(datas);
     }
 

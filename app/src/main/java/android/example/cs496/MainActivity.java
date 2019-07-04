@@ -51,23 +51,23 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabs;
     private ViewPager viewPager;
     SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-    private TextView mResult;
 
     public static ArrayList<Uri> imageList = new ArrayList<>();
-    public static int[] picArr = {R.drawable.add_camera, R.drawable.cat, R.drawable.tree, R.drawable.sunflower, R.drawable.rose, R.drawable.panda,
-            R.drawable.heart, R.drawable.google, R.drawable.tiger, R.drawable.dog, R.drawable.chiba3, R.drawable.chiba,
-            R.drawable.girl, R.drawable.fruit, R.drawable.beach, R.drawable.bird, R.drawable.chiba2, R.drawable.yun2,
-            R.drawable.yun3, R.drawable.yun4, R.drawable.yun5, R.drawable.iu, R.drawable.view, R.drawable.goeun_img1,
-            R.drawable.goeun_img2};
+//    public static int[] picArr = {R.drawable.add_camera, R.drawable.cat, R.drawable.tree, R.drawable.sunflower, R.drawable.rose, R.drawable.panda,
+//            R.drawable.heart, R.drawable.google, R.drawable.tiger, R.drawable.dog, R.drawable.chiba3, R.drawable.chiba,
+//            R.drawable.girl, R.drawable.fruit, R.drawable.beach, R.drawable.bird, R.drawable.chiba2, R.drawable.yun2,
+//            R.drawable.yun3, R.drawable.yun4, R.drawable.yun5, R.drawable.iu, R.drawable.view, R.drawable.goeun_img1,
+//            R.drawable.goeun_img2};
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        imageList.add(Uri.parse(""));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermissions();
 
-        //new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
+        new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
         //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone");
         //new PutDataTask().execute("http://143.248.36.220:3000/api/updatePhone/:id");
         //new DeleteDataTask().execute("http://143.248.36.220:3000/api/deletePhone/:id");

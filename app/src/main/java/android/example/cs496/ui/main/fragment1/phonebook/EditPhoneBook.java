@@ -74,13 +74,6 @@ public class EditPhoneBook extends AppCompatActivity implements View.OnClickList
                     Toast.makeText(getApplicationContext(), "실패!", Toast.LENGTH_LONG).show();
                     break;
                 }
-
-//                Intent intent = new Intent(Intent.ACTION_EDIT);
-//                intent.setData(ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, mRecycelerItem.getPersonId()));
-//                intent.putExtra(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, textName.getText().toString());
-//                intent.putExtra(ContactsContract.CommonDataKinds.Phone.NUMBER, textName.getText().toString());
-//                intent.putExtra(ContactsContract.CommonDataKinds.Email.ADDRESS, textEmail.getText().toString());
-//                startActivity(intent);
                 RecyclerItem newRecyclerItem
                         = new RecyclerItem(
                         mRecycelerItem.getId(),

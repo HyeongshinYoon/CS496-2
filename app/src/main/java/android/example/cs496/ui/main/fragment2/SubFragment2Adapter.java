@@ -2,6 +2,7 @@ package android.example.cs496.ui.main.fragment2;
 
 import android.example.cs496.MainActivity;
 import android.example.cs496.R;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,15 +11,19 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.github.chrisbanes.photoview.PhotoView;
 
+import java.util.ArrayList;
+
 public class SubFragment2Adapter extends PagerAdapter {
     LayoutInflater inflater;
-    public SubFragment2Adapter(LayoutInflater inflater) {
+    private ArrayList<Uri> mData;
+    public SubFragment2Adapter(LayoutInflater inflater, ArrayList<Uri> data) {
         this.inflater=inflater;
+        this.mData = data;
     }
 
     @Override
     public int getCount() {
-        return MainActivity.picArr.length;
+        return mData.size();
     }
 
     @Override
@@ -26,7 +31,8 @@ public class SubFragment2Adapter extends PagerAdapter {
         inflater = LayoutInflater.from(viewGroup.getContext());
         View view = inflater.inflate(R.layout.tab_fragment2_zoominout, viewGroup, false);
         PhotoView photoView = view.findViewById(R.id.photoView);
-        photoView.setImageResource(MainActivity.picArr[position]);
+        photoView.setImageURI(MainActivity.imageList.get(position));
+        //photoView.setImageResource(MainActivity.picArr[position]);
 
         viewGroup.addView(view);
         return view;
