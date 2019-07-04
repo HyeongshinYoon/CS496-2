@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,6 +58,7 @@ public class TabFragment1 extends Fragment {
         View v = inflater.inflate(R.layout.tab_fragment1,container,false);
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
+
         resetData();
 
         enableSwipe();
@@ -78,7 +81,6 @@ public class TabFragment1 extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
                 if (dy==0){
                     fab.hide();
-
                 }else {
                     fab.show();
                 }

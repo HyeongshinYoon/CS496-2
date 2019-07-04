@@ -1,11 +1,15 @@
 package android.example.cs496;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.example.cs496.ui.main.SectionsPagerAdapter;
 import android.example.cs496.ui.main.TabFragment1;
 import android.example.cs496.ui.main.TabFragment2;
 import android.example.cs496.ui.main.TabFragment3;
 import android.example.cs496.ui.main.fragment1.dummyData;
+import android.example.cs496.ui.main.fragment1.phonebook.GroupPhoneBook;
+import android.example.cs496.ui.main.fragment1.phonebook.SearchPhoneBook;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -19,6 +23,10 @@ import com.gun0912.tedpermission.TedPermission;
 import org.json.JSONException;
 
 import android.example.cs496.ui.main.SectionsPagerAdapter;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -31,13 +39,41 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabs;
     private ViewPager viewPager;
     SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+    Context context;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        context = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermissions();
-        initView();
+        ImageButton searchButton = (ImageButton) findViewById(R.id.search_button);
+        ImageButton groupButton = (ImageButton) findViewById(R.id.group_button);
+        initView(searchButton,groupButton);
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "search", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, SearchPhoneBook.class);
+                startActivityForResult(intent,0);
+
+            }
+        });
+
+        groupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Toast.makeText(MainActivity.this, "group", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, GroupPhoneBook.class);
+                startActivityForResult(intent,0);
+
+            }
+        });
     }
 
     public void setupViewPager(ViewPager mViewPager) {
@@ -69,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
                         Manifest.permission.SEND_SMS})
                 .check();
     }
-    //test1
-    public void initView(){
+
+    public void initView(final ImageButton searchButton, final ImageButton groupButton){
         //Initializing the TabLayout;
         tabs = findViewById(R.id.tabs);
         try {
@@ -85,11 +121,19 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
         tabs.setupWithViewPager(viewPager);
-
+        //selecting tabs
         tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+                //검색, 그룹 버튼이 Tab1에만 보이도록
+                if(tab.getPosition()==0){
+                    searchButton.setVisibility(View.VISIBLE);
+                    groupButton.setVisibility(View.VISIBLE);
+                }else {
+                    searchButton.setVisibility(View.INVISIBLE);
+                    groupButton.setVisibility(View.INVISIBLE);
+                }
             }
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
@@ -99,4 +143,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }
