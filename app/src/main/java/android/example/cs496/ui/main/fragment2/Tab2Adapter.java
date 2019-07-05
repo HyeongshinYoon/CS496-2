@@ -12,6 +12,8 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RectShape;
 import android.media.Image;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,17 +23,18 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Tab2Adapter extends BaseAdapter {
     //private Bitmap[] picArr;
-    private ArrayList<Uri> mData;
+    private ArrayList<PhotoItem> mData;
     private LayoutInflater inf;
     private Context context;
     GridViewHolder viewHolder;
 
     //    public Tab2Adapter(LayoutInflater inflater, Bitmap[] picArr) {
-    public Tab2Adapter(Context context, LayoutInflater inflater, ArrayList<Uri> data) {
+    public Tab2Adapter(Context context, LayoutInflater inflater, ArrayList<PhotoItem> data) {
         this.inf = inflater;
         this.context = context;
         this.mData = data;
@@ -51,20 +54,24 @@ public class Tab2Adapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        // 캐시된 뷰가 없을 경우 새로 생성하고 뷰홀더를 생성한다.
         if (convertView == null) {
             convertView = inf.inflate(R.layout.griditem, parent, false);
             viewHolder = new GridViewHolder();
-            if (position==0) {
-                viewHolder.img = convertView.findViewById(R.id.imageView1);
-            }
-            else{ viewHolder.img = convertView.findViewById(R.id.imageView1); }
+            viewHolder.img = convertView.findViewById(R.id.imageView1);
             convertView.setTag(viewHolder);
         }
-        // 캐시된 뷰가 있을 경우 저장된 뷰홀더를 사용한다.
         else{
             convertView.setLayoutParams(new GridView.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT));
             viewHolder = (GridViewHolder) convertView.getTag();
+        }
+
+        File file = new File(Environment.getExternalStorageDirectory().toString() + "/CS496_caches/" + getItem(position));
+
+        // cache hit
+        if(file.exists()) {
+            viewHolder.img.setImageURI(Uri.fromFile(file));
+        } else {
+            new GetSingelItemTask(getItem(position)).execute();
         }
 
         if (position==0) {
@@ -78,8 +85,62 @@ public class Tab2Adapter extends BaseAdapter {
             viewHolder.img.setClipToOutline(true);
             viewHolder.img.setScaleType(ImageView.ScaleType.CENTER);
         }else
-            viewHolder.img.setImageURI(MainActivity.imageList.get(position));
+            viewHolder.img.setImageURI(MainActivity.imageList.get(position).getUri());
 //        if (position!=0) {viewHolder.img.setImageResource(MainActivity.picArr[position]);}
         return convertView;
+    }
+
+    private class GetSingelItemTask extends AsyncTask {
+
+        private String id;
+
+        public GetSingelItemTask(String id) {
+            this.id = id;
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+
+            String jsonResponse = "";
+
+            try {
+
+                HttpClient httpClient = new DefaultHttpClient();
+                String urlString = "http://13.125.74.66:8082/api/images/" + id;
+                URI url = new URI(urlString);
+
+                HttpGet httpGet = new HttpGet(url);
+                HttpResponse response = httpClient.execute(httpGet);
+                jsonResponse = EntityUtils.toString(response.getEntity(), HTTP.UTF_8);
+
+                JSONObject obj = new JSONObject(jsonResponse);
+
+                String obj_id           = obj.getString("_id");
+                String parsedString     = obj.getString("parsedString");
+
+                byte[] decodedString = Base64.decode(parsedString, Base64.DEFAULT);
+
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+                saveImageBitmap(bitmap, obj_id);
+
+                return true;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            File file = new File(Environment.getExternalStorageDirectory().toString() + "/CS496_caches/" + id);
+            viewHolder.img.setImageURI(Uri.fromFile(file));
+        }
     }
 }

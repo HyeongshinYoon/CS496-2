@@ -180,7 +180,6 @@ public class dummyData {
         }
         datas.remove(real_position);
         datas.add(new_item);
-        new MainActivity.PostDataTask().execute("http://143.248.36.220:3000/api/addPhone");
         JSONObject dataToSend = new JSONObject();
         try {
             dataToSend.put("id", new_item.getId());

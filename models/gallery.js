@@ -2,14 +2,17 @@ var mongoose = require('mongoose');
 
 // Define Schemas
 var photoSchema = new mongoose.Schema({
-  photoId: {
-    type: Number, required: true
+  path:  {
+    type: String
   },
-  path:  { type: String },
-  img: {
-    data: Buffer, contentType: String
+  label: {
+    type: String,
+    required: true
   },
-  timestamp: {type: Date, default: Date.now}
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 },
 {
   collection: 'gallery'

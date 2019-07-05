@@ -7,6 +7,7 @@ import android.example.cs496.ui.main.TabFragment1;
 import android.example.cs496.ui.main.TabFragment2;
 import android.example.cs496.ui.main.TabFragment3;
 import android.example.cs496.ui.main.fragment1.dummyData;
+import android.example.cs496.ui.main.fragment2.PhotoItem;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -52,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-    public static ArrayList<Uri> imageList = new ArrayList<>();
+    public static ArrayList<PhotoItem> imageList = new ArrayList<>();
+    public static int lastImageNum = 0;
 //    public static int[] picArr = {R.drawable.add_camera, R.drawable.cat, R.drawable.tree, R.drawable.sunflower, R.drawable.rose, R.drawable.panda,
 //            R.drawable.heart, R.drawable.google, R.drawable.tiger, R.drawable.dog, R.drawable.chiba3, R.drawable.chiba,
 //            R.drawable.girl, R.drawable.fruit, R.drawable.beach, R.drawable.bird, R.drawable.chiba2, R.drawable.yun2,
@@ -62,12 +64,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        imageList.add(Uri.parse(""));
+        imageList.add(new PhotoItem());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermissions();
 
-        new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
+        //new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
         //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone");
         //new PutDataTask().execute("http://143.248.36.220:3000/api/updatePhone/:id");
         //new DeleteDataTask().execute("http://143.248.36.220:3000/api/deletePhone/:id");
@@ -363,6 +365,136 @@ public class MainActivity extends AppCompatActivity {
     }
 
     class DeleteDataTask extends AsyncTask<String, Void, String> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setMessage("Deleting data...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                return deleteData(params[0]);
+            } catch (IOException ex) {
+                return "Network error !";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            System.out.println("delete"+result);
+            if(progressDialog != null){
+                progressDialog.dismiss();
+            }
+        }
+
+        private String deleteData(String urlPath) throws IOException {
+
+            String result = null;
+
+            URL url = new URL(urlPath+"/1");
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setReadTimeout(10000 /* milliseconds */);
+            urlConnection.setConnectTimeout(10000 /* millisecods */);
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+            urlConnection.connect();
+
+            System.out.println("delete: "+urlConnection.getResponseCode());
+
+            if (urlConnection.getResponseCode() == 200) {
+                result = "Delete Successfully !";
+            } else {
+                result = "Delete failed !";
+            }
+
+            return result;
+        }
+    }
+
+    class GetImageTask extends AsyncTask<String, Void, String> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setMessage("Loading data...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params){
+
+            try {
+                return getData(params[0]);
+            }catch (IOException ex){
+                return "Network error !";
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+            super.onPostExecute(result);
+
+            // Result(jSONArray가 String 형식으로 들어옴)
+            JSONArray ja = null;
+            try {
+                // type을 JSONArray로 바꾼 후, setInitialData(JSONArray) 실행
+                ja = new JSONArray(result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if(progressDialog != null){
+                progressDialog.dismiss();
+            }
+        }
+
+        private String getData(String urlPath) throws IOException {
+            StringBuilder result = new StringBuilder();
+            BufferedReader bufferedReader = null;
+
+            try {
+                URL url = new URL(urlPath);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setReadTimeout(10000 /* milliseconds */);
+                urlConnection.setConnectTimeout(10000 /* millisecods */);
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+                urlConnection.connect();
+
+                InputStream inputStream = urlConnection.getInputStream();
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    result.append(line).append("\n");
+                }
+
+            } finally {
+                if(bufferedReader != null){
+                    bufferedReader.close();
+                }
+            }
+
+            System.out.println(result);
+            return result.toString();
+        }
+    }
+
+
+
+    class DeleteImageTask extends AsyncTask<String, Void, String> {
 
         ProgressDialog progressDialog;
 
