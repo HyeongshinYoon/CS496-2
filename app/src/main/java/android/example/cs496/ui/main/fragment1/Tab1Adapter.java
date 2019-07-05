@@ -1,10 +1,13 @@
 package android.example.cs496.ui.main.fragment1;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.example.cs496.MainActivity;
 import android.example.cs496.R;
 import android.graphics.Color;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,9 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 public class Tab1Adapter extends RecyclerView.Adapter<Tab1Adapter.MyViewHolder> {
@@ -27,11 +33,73 @@ public class Tab1Adapter extends RecyclerView.Adapter<Tab1Adapter.MyViewHolder> 
         this.context = context;
     }
 
-    public void removeItem(int position) {
+    public void removeItem(int position, int deletedId) {
         datas.remove(position);
+        String stringId = Integer.toString(deletedId);
+        // datas에서 지우면 데이터베이스에서도 지우기, id를 받아와야
+        new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/" + stringId);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, datas.size());
     }
+
+    class DeleteDataTask extends AsyncTask<String, Void, String> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(context);
+            //progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setMessage("Deleting data...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                return deleteData(params[0]);
+            } catch (IOException ex) {
+                return "Network error !";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            //mResult.setText(result);
+            System.out.println("delete"+result);
+            if(progressDialog != null){
+                progressDialog.dismiss();
+            }
+        }
+
+        private String deleteData(String urlPath) throws IOException {
+
+            String result = null;
+
+            URL url = new URL(urlPath);
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setReadTimeout(10000 /* milliseconds */);
+            urlConnection.setConnectTimeout(10000 /* millisecods */);
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+            urlConnection.connect();
+
+            System.out.println("delete: "+urlConnection.getResponseCode());
+
+            if (urlConnection.getResponseCode() == 200) {
+                result = "Delete Successfully !";
+            } else {
+                result = "Delete failed !";
+            }
+
+            return result;
+        }
+    }
+
     public void restoreItem(RecyclerItem model, int position) {
         datas.add(position, model);
         // notify item added by position
@@ -122,6 +190,8 @@ public class Tab1Adapter extends RecyclerView.Adapter<Tab1Adapter.MyViewHolder> 
     public interface OnClickListener {
         void onPhoneClick(int position);
     }
+
+
 
 //    public Bitmap loadContactPhoto(ContentResolver cr, long id, long photo_id) {
 //        Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id);

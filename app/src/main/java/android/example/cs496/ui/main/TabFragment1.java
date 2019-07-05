@@ -59,7 +59,7 @@ public class TabFragment1 extends Fragment {
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
-        resetData();
+        resetData();// refresh data, set Recyclerview
 
         enableSwipe();
 
@@ -108,7 +108,8 @@ public class TabFragment1 extends Fragment {
                 }));
         return v;
     }
-    private void enableSwipe(){
+
+    private void enableSwipe(){// 옆으로 밀어서 삭제 기능??
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(1, ItemTouchHelper.RIGHT) {
 
             @Override
@@ -118,12 +119,15 @@ public class TabFragment1 extends Fragment {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                if (direction == ItemTouchHelper.RIGHT && viewHolder.getAdapterPosition()!=0){
+                if (direction == ItemTouchHelper.RIGHT && viewHolder.getAdapterPosition()!=0){//오른쪽으로 밀고, 그 위치가 0이 아니면
                     int position = viewHolder.getAdapterPosition();
                     final RecyclerItem deletedModel = datas.get(position);
+                    int deletedId = deletedModel.getId();
                     final int deletedPosition = position;
                     // showing snack bar with Undo option
-                    adapter.removeItem(position);
+                    adapter.removeItem(position, deletedId);
+
+                    // 잘못 눌렀을 때 다시 돌아오는 부분
                     Snackbar snackbar = Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), " removed from Contacts!", Snackbar.LENGTH_LONG);
                     snackbar.setAction("UNDO", new View.OnClickListener() {
                         @Override

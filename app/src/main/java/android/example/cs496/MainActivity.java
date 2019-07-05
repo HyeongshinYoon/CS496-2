@@ -8,6 +8,7 @@ import android.example.cs496.ui.main.SectionsPagerAdapter;
 import android.example.cs496.ui.main.TabFragment1;
 import android.example.cs496.ui.main.TabFragment2;
 import android.example.cs496.ui.main.TabFragment3;
+import android.example.cs496.ui.main.fragment1.RecyclerItem;
 import android.example.cs496.ui.main.fragment1.dummyData;
 import android.example.cs496.ui.main.fragment1.phonebook.GroupPhoneBook;
 import android.example.cs496.ui.main.fragment1.phonebook.SearchPhoneBook;
@@ -47,14 +48,15 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import io.socket.client.IO;
+import java.util.Map;
 
 import static android.example.cs496.ui.main.fragment1.dummyData.setInitialData;
 
 public class MainActivity extends AppCompatActivity {
-
+    ImageButton searchButton;
+    ImageButton groupButton;
     private TabLayout tabs;
     private ViewPager viewPager;
     SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -69,20 +71,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermissions();
-        ImageButton searchButton = (ImageButton) findViewById(R.id.search_button);
-        ImageButton groupButton = (ImageButton) findViewById(R.id.group_button);
-        initView(searchButton,groupButton);
+        initView();
+        ///////
+//        Map<String, String> map = new HashMap<String, String>();
+//        map.put("KEY","value");
+//
+//        System.out.println(map.get("KEY"));
+//        System.out.println(map[0]);
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/2");
                 Toast.makeText(MainActivity.this, "search", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, SearchPhoneBook.class);
-                startActivityForResult(intent,0);
+                //아이디도 스트링으로 받아서, 그 안에서 다시 정수로 변환해줘야
+                //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일");
+                //Intent intent = new Intent(MainActivity.this, SearchPhoneBook.class);
+                //startActivityForResult(intent,0);
 
             }
         });
-
         groupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,11 +102,13 @@ public class MainActivity extends AppCompatActivity {
         });
         mResult = (TextView) findViewById(R.id.test);
 
-        //new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
-        //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone");
-        //new PutDataTask().execute("http://143.248.36.220:3000/api/updatePhone/:id");
-        //new DeleteDataTask().execute("http://143.248.36.220:3000/api/deletePhone/:id");
-        initView();
+        //new GetDataTask().execute("http://143.248.36.218:3000/api/phones"); 전체 불러옴
+        //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
+        //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/:id"); 주소록 바뀐 사람 추가하기, id 기준
+        //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/:id"); 해당 id 삭제
+        // 영연 143.248.36.218
+        //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone", );
+
     }
 
     public void setupViewPager(ViewPager mViewPager) {
@@ -131,11 +141,13 @@ public class MainActivity extends AppCompatActivity {
                 .check();
     }
 
-    public void initView(final ImageButton searchButton, final ImageButton groupButton){
+    public void initView(){
         //Initializing the TabLayout;
         tabs = findViewById(R.id.tabs);
+        searchButton = findViewById(R.id.search_button);
+        groupButton =  findViewById(R.id.group_button);
         //new dummyData();
-        new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
+        new GetDataTask().execute("http://143.248.36.218:3000/api/phones");
         //setInitialData();
         //Initializing ViewPager
         viewPager = findViewById(R.id.view_pager);
@@ -165,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    // 데이터베이스에서 가져오거나 보내는 4가지
+    // 데이터베이스에서 모든 데이터 가져오기
     class GetDataTask extends AsyncTask<String, Void, String> {
 
         ProgressDialog progressDialog;
@@ -179,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params){
-
+            // initialize and config request, then connect to server
             try {
                 return getData(params[0]);
             }catch (IOException ex){
@@ -238,86 +252,89 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class PostDataTask extends AsyncTask<String, Void, String> {
-
-        ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMessage("Inserting data...");
-            progressDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... params){
-
-            try {
-                return postData(params[0]);
-            } catch (IOException ex){
-                return "Network error !";
-            } catch (JSONException ex){
-                return "Data Invalid !";
-            }
-        }
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            mResult.setText(result);
-            if(progressDialog != null) {
-                progressDialog.dismiss();
-            }
-        }
-
-        private String postData(String urlPath) throws IOException, JSONException {
-
-            StringBuilder result = new StringBuilder();
-            BufferedWriter bufferedWriter = null;
-            BufferedReader bufferedReader = null;
-
-            try {
-                JSONObject dataToSend = new JSONObject();
-                dataToSend.put("id", 1);
-                dataToSend.put("name", "Kelly");
-                dataToSend.put("phone", "010-1234-5678");
-                dataToSend.put("group", "KAIST");
-                dataToSend.put("img", "");
-                dataToSend.put("email", "abc@kaist.ac.kr");
-
-                System.out.println("send"+dataToSend);
-                URL url = new URL(urlPath);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setReadTimeout(10000 /* milliseconds */);
-                urlConnection.setConnectTimeout(10000 /* millisecods */);
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setDoOutput(true); //enable output (body data)
-                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
-                urlConnection.connect();
-
-                OutputStream outputStream = urlConnection.getOutputStream();
-                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-                bufferedWriter.write(dataToSend.toString());
-                bufferedWriter.flush();
-
-                InputStream inputStream = urlConnection.getInputStream();
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    result.append(line).append("\n");
-                }
-            } finally {
-                if( bufferedReader != null) {
-                    bufferedReader.close();
-                }
-                if(bufferedWriter != null){
-                    bufferedWriter.close();
-                }
-            }
-            return result.toString();
-        }
-    }
+    //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
+//    class PostDataTask extends AsyncTask<String, Void, String> {
+//
+//        ProgressDialog progressDialog;
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            progressDialog = new ProgressDialog(MainActivity.this);
+//            progressDialog.setMessage("Inserting data...");
+//            progressDialog.show();
+//        }
+//
+//        @Override
+//        protected String doInBackground(String... params){
+//
+//            try {
+//                return postData(params[0], params[1], params[2], params[3], params[4], params[5],params[6]);
+//            } catch (IOException ex){
+//                return "Network error !";
+//            } catch (JSONException ex){
+//                return "Data Invalid !";
+//            }
+//        }
+//        @Override
+//        protected void onPostExecute(String result) {
+//            super.onPostExecute(result);
+//
+//            mResult.setText(result);
+//            if(progressDialog != null) {
+//                progressDialog.dismiss();
+//            }
+//        }
+//
+//        private String postData(String urlPath, String strId, String name, String phone, String group, String img, String email) throws IOException, JSONException {
+//
+//            StringBuilder result = new StringBuilder();
+//            BufferedWriter bufferedWriter = null;
+//            BufferedReader bufferedReader = null;
+//
+//            int id = Integer.parseInt(strId);
+//
+//            try {
+//                JSONObject dataToSend = new JSONObject();
+//                dataToSend.put("id", id);
+//                dataToSend.put("name", name);
+//                dataToSend.put("phone", phone);
+//                dataToSend.put("group", group);
+//                dataToSend.put("img", "");
+//                dataToSend.put("email", email);
+//
+//                System.out.println("send"+dataToSend);
+//                URL url = new URL(urlPath);
+//                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//                urlConnection.setReadTimeout(10000 /* milliseconds */);
+//                urlConnection.setConnectTimeout(10000 /* millisecods */);
+//                urlConnection.setRequestMethod("POST");
+//                urlConnection.setDoOutput(true); //enable output (body data)
+//                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+//                urlConnection.connect();
+//
+//                OutputStream outputStream = urlConnection.getOutputStream();
+//                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
+//                bufferedWriter.write(dataToSend.toString());
+//                bufferedWriter.flush();
+//
+//                InputStream inputStream = urlConnection.getInputStream();
+//                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+//                String line;
+//                while ((line = bufferedReader.readLine()) != null) {
+//                    result.append(line).append("\n");
+//                }
+//            } finally {
+//                if( bufferedReader != null) {
+//                    bufferedReader.close();
+//                }
+//                if(bufferedWriter != null){
+//                    bufferedWriter.close();
+//                }
+//            }
+//            return result.toString();
+//        }
+//    }
 
     class PutDataTask extends AsyncTask<String, Void, String> {
 
@@ -377,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
                 urlConnection.setDoOutput(true); //enable output (body data)
                 urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
                 urlConnection.connect();
-
+                // write data into server
                 OutputStream outputStream = urlConnection.getOutputStream();
                 bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
                 bufferedWriter.write(dataToSend.toString());
@@ -398,60 +415,60 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class DeleteDataTask extends AsyncTask<String, Void, String> {
-
-        ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMessage("Deleting data...");
-            progressDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                return deleteData(params[0]);
-            } catch (IOException ex) {
-                return "Network error !";
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            mResult.setText(result);
-            System.out.println("delete"+result);
-            if(progressDialog != null){
-                progressDialog.dismiss();
-            }
-        }
-
-        private String deleteData(String urlPath) throws IOException {
-
-            String result = null;
-
-            URL url = new URL(urlPath+"/1");
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setReadTimeout(10000 /* milliseconds */);
-            urlConnection.setConnectTimeout(10000 /* millisecods */);
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
-            urlConnection.connect();
-
-            System.out.println("delete: "+urlConnection.getResponseCode());
-
-            if (urlConnection.getResponseCode() == 200) {
-                result = "Delete Successfully !";
-            } else {
-                result = "Delete failed !";
-            }
-
-            return result;
-        }
-    }
+//    class DeleteDataTask extends AsyncTask<String, Void, String> {
+//
+//        ProgressDialog progressDialog;
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//
+//            progressDialog = new ProgressDialog(MainActivity.this);
+//            progressDialog.setMessage("Deleting data...");
+//            progressDialog.show();
+//        }
+//
+//        @Override
+//        protected String doInBackground(String... params) {
+//            try {
+//                return deleteData(params[0]);
+//            } catch (IOException ex) {
+//                return "Network error !";
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String result) {
+//            super.onPostExecute(result);
+//
+//            mResult.setText(result);
+//            System.out.println("delete"+result);
+//            if(progressDialog != null){
+//                progressDialog.dismiss();
+//            }
+//        }
+//
+//        private String deleteData(String urlPath) throws IOException {
+//
+//            String result = null;
+//
+//            URL url = new URL(urlPath);
+//            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//            urlConnection.setReadTimeout(10000 /* milliseconds */);
+//            urlConnection.setConnectTimeout(10000 /* millisecods */);
+//            urlConnection.setRequestMethod("GET");
+//            urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+//            urlConnection.connect();
+//
+//            System.out.println("delete: "+urlConnection.getResponseCode());
+//
+//            if (urlConnection.getResponseCode() == 200) {
+//                result = "Delete Successfully !";
+//            } else {
+//                result = "Delete failed !";
+//            }
+//
+//            return result;
+//        }
+//    }
 }

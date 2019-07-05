@@ -13,6 +13,7 @@ public class RecyclerItem
     private int id = 0;
 
     public RecyclerItem(){}
+
     public RecyclerItem(RecyclerItem mRecyclerItem){
         this.id = mRecyclerItem.getId();
         this.name = mRecyclerItem.getName();
@@ -63,6 +64,7 @@ public class RecyclerItem
     public int hashCode() {
         return getPhNumberchanged().hashCode();
     }
+
     public String getPhNumberchanged(){ return phone.replace("-",""); }
 
     @Override

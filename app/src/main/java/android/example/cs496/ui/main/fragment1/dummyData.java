@@ -124,10 +124,9 @@ public class dummyData {
 
     public static void setInitialData(JSONArray personArray) throws JSONException {
         datas = new ArrayList<>();
-
         RecyclerItem data = new RecyclerItem(0, "", R.drawable.ic_addperson, "", "", "");
         datas.add(data);
-
+        //제이슨 어레이를 받아 그 안에 있는 제이슨 오브젝트 하나하나를 리사이클러 아이템으로 바꾼 후,
         for (int i = 0; i < personArray.length(); i++) {
             int img;
             String phone, group, email;
@@ -141,7 +140,7 @@ public class dummyData {
             if(jObject.isNull("img")){
                 img = R.drawable.ic_launcher_foreground_primarylight;
             }else {
-                img = jObject.getInt("img");
+                img = R.drawable.ic_launcher_foreground_primarylight;
             }
             if(jObject.isNull("group")){
                 group = "";
@@ -200,7 +199,7 @@ public class dummyData {
         numData = datas.size();
     }
 
-    public static void insertData(RecyclerItem new_item) {
+    public static int insertData(RecyclerItem new_item) {
 
         // PostDataTask
         new_item.setImg(R.drawable.ic_launcher_foreground_primarylight);
@@ -209,6 +208,8 @@ public class dummyData {
         datas.add(new_item);
         Collections.sort(datas);
         numData = datas.size();
+
+        return new_item.getId();
     }
 
 }
