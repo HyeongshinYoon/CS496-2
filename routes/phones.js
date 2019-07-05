@@ -59,7 +59,7 @@ exports.updatePhone = function(req, res){
 
 exports.deletePhone = function(req, res){
 
-  User.remove({id:req.params.id}, function(err){
+  User.deleteOne({id:req.params.id}, function(err){
       if(err){
         res.send(err)
       }
