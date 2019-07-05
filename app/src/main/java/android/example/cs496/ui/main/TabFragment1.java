@@ -109,7 +109,7 @@ public class TabFragment1 extends Fragment {
         return v;
     }
 
-    private void enableSwipe(){// 옆으로 밀어서 삭제 기능??
+    private void enableSwipe(){// 옆으로 밀어서 삭제&삭제 취소
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(1, ItemTouchHelper.RIGHT) {
 
             @Override

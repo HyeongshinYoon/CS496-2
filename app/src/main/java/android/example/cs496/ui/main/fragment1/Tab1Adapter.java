@@ -18,7 +18,16 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -100,8 +109,102 @@ public class Tab1Adapter extends RecyclerView.Adapter<Tab1Adapter.MyViewHolder> 
         }
     }
 
+    class PostDataTask extends AsyncTask<String, Void, String> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //progressDialog = new ProgressDialog(mcontext);
+            //progressDialog.setMessage("Inserting data...");
+            //progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params){
+
+            try {
+                return postData(params[0], params[1], params[2], params[3], params[4], params[5],params[6]);
+            } catch (IOException ex){
+                return "Network error !";
+            } catch (JSONException ex){
+                return "Data Invalid !";
+            }
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            //mResult.setText(result);
+            if(progressDialog != null) {
+                progressDialog.dismiss();
+            }
+        }
+
+        private String postData(String urlPath, String strId, String name, String phone, String group, String img, String email) throws IOException, JSONException {
+
+            StringBuilder result = new StringBuilder();
+            BufferedWriter bufferedWriter = null;
+            BufferedReader bufferedReader = null;
+
+            int id = Integer.parseInt(strId);
+
+            try {
+                JSONObject dataToSend = new JSONObject();
+                dataToSend.put("id", id);
+                dataToSend.put("name", name);
+                dataToSend.put("phone", phone);
+                dataToSend.put("group", group);
+                dataToSend.put("img", "");
+                dataToSend.put("email", email);
+
+                System.out.println("send"+dataToSend);
+                URL url = new URL(urlPath);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setReadTimeout(10000 /* milliseconds */);
+                urlConnection.setConnectTimeout(10000 /* millisecods */);
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setDoOutput(true); //enable output (body data)
+                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+                urlConnection.connect();
+
+                OutputStream outputStream = urlConnection.getOutputStream();
+                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
+                bufferedWriter.write(dataToSend.toString());
+                bufferedWriter.flush();
+
+                InputStream inputStream = urlConnection.getInputStream();
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    result.append(line).append("\n");
+                }
+            } finally {
+                if( bufferedReader != null) {
+                    bufferedReader.close();
+                }
+                if(bufferedWriter != null){
+                    bufferedWriter.close();
+                }
+            }
+            return result.toString();
+        }
+    }
+
     public void restoreItem(RecyclerItem model, int position) {
         datas.add(position, model);
+
+        int id = model.getId();
+        String name = model.getName();
+        String phone = model.getPhone();
+        //Img img =model.getImg(); // 이미지는 일단 고려하지 않고
+        String group = model.getGroup();
+        String email = model.getEmail();
+
+        String strId = Integer.toString(id);
+        new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone",strId, name, phone, "", group, email);
+
         // notify item added by position
         notifyItemInserted(position);
     }

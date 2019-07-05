@@ -84,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/2");
                 Toast.makeText(MainActivity.this, "search", Toast.LENGTH_SHORT).show();
+                //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/5","5","업데이트완료","010-0000-4141","업데이트그룹","이미지","업데이트이메일");
+                //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/112","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일"); 해당 id 삭제
                 //아이디도 스트링으로 받아서, 그 안에서 다시 정수로 변환해줘야
                 //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일");
                 //Intent intent = new Intent(MainActivity.this, SearchPhoneBook.class);
@@ -336,6 +338,7 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //    }
 
+    //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/:id"); 주소록 바뀐 사람 추가하기, id 기준
     class PutDataTask extends AsyncTask<String, Void, String> {
 
         ProgressDialog progressDialog;
@@ -344,15 +347,15 @@ public class MainActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMessage("Updating data...");
-            progressDialog.show();
+//            progressDialog = new ProgressDialog(MainActivity.this);
+//            progressDialog.setMessage("Updating data...");
+//            progressDialog.show();
         }
 
         @Override
         protected String doInBackground(String... params) {
             try {
-                return putData(params[0]);
+                return putData(params[0], params[1], params[2], params[3], params[4], params[5],params[6]);
             } catch (IOException ex) {
                 return "Network Error !";
             } catch (JSONException ex) {
@@ -372,21 +375,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        private String putData(String urlPath) throws IOException, JSONException {
+        private String putData(String urlPath, String strId, String name, String phone, String group, String img, String email) throws IOException, JSONException {
 
             BufferedWriter bufferedWriter = null;
             String result = null;
 
+            int id = Integer.parseInt(strId);
+
             try {
                 JSONObject dataToSend = new JSONObject();
-                dataToSend.put("id", 1);
-                dataToSend.put("name", "Oliv");
-                dataToSend.put("phone", "010-1234-5678");
-                dataToSend.put("group", "UNIST");
+                dataToSend.put("id", id);
+                dataToSend.put("name", name);
+                dataToSend.put("phone", phone);
+                dataToSend.put("group", group);
                 dataToSend.put("img", "");
-                dataToSend.put("email", "abc@kaist.ac.kr");
+                dataToSend.put("email", email);
 
-                URL url = new URL(urlPath+"/1");
+                URL url = new URL(urlPath);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setReadTimeout(10000 /* milliseconds */);
                 urlConnection.setConnectTimeout(10000 /* millisecods */);

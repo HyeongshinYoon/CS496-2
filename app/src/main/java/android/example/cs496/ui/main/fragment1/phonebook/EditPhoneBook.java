@@ -83,6 +83,87 @@ public class EditPhoneBook extends AppCompatActivity implements View.OnClickList
         setResult(0);
     }
 
+    class PutDataTask extends AsyncTask<String, Void, String> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+//            progressDialog = new ProgressDialog(MainActivity.this);
+//            progressDialog.setMessage("Updating data...");
+//            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                return putData(params[0], params[1], params[2], params[3], params[4], params[5],params[6]);
+            } catch (IOException ex) {
+                return "Network Error !";
+            } catch (JSONException ex) {
+                return "Data invalid !";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            //mResult.setText(result);
+            System.out.println("update"+result);
+
+            if(progressDialog != null){
+                progressDialog.dismiss();
+            }
+        }
+
+        private String putData(String urlPath, String strId, String name, String phone, String group, String img, String email) throws IOException, JSONException {
+
+            BufferedWriter bufferedWriter = null;
+            String result = null;
+
+            int id = Integer.parseInt(strId);
+
+            try {
+                JSONObject dataToSend = new JSONObject();
+                dataToSend.put("id", id);
+                dataToSend.put("name", name);
+                dataToSend.put("phone", phone);
+                dataToSend.put("group", group);
+                dataToSend.put("img", "");
+                dataToSend.put("email", email);
+
+                URL url = new URL(urlPath);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setReadTimeout(10000 /* milliseconds */);
+                urlConnection.setConnectTimeout(10000 /* millisecods */);
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setDoOutput(true); //enable output (body data)
+                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+                urlConnection.connect();
+                // write data into server
+                OutputStream outputStream = urlConnection.getOutputStream();
+                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
+                bufferedWriter.write(dataToSend.toString());
+                bufferedWriter.flush();
+
+                System.out.println("ResponseCode: "+urlConnection.getResponseCode());
+
+                if (urlConnection.getResponseCode() == 200) {
+                    return "Update successfully !";
+                } else {
+                    return "Update failed !";
+                }
+            } finally {
+                if(bufferedWriter != null) {
+                    bufferedWriter.close();
+                }
+            }
+        }
+    }
+
     class PostDataTask extends AsyncTask<String, Void, String> {
 
         ProgressDialog progressDialog;
@@ -200,6 +281,9 @@ public class EditPhoneBook extends AppCompatActivity implements View.OnClickList
                 }
                 if(mState == 2){ // 수정할 경우
                     editData(mRecycelerItem.getId(), newRecyclerItem);
+                    String strId = Integer.toString(mRecycelerItem.getId());
+                    new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/"+strId,strId,textName.getText().toString(),textPhone.getText().toString(),textGroup.getText().toString(),"",textEmail.getText().toString());
+                    System.out.println(strId);
                     Toast.makeText(getApplicationContext(), "수정 완료!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent();
                     intent.putExtra("new_item", newRecyclerItem);
