@@ -7,7 +7,7 @@ import android.example.cs496.ui.main.TabFragment1;
 import android.example.cs496.ui.main.TabFragment2;
 import android.example.cs496.ui.main.TabFragment3;
 import android.example.cs496.ui.main.fragment1.dummyData;
-import android.example.cs496.ui.main.fragment2.PhotoItem;
+//import android.example.cs496.ui.main.fragment2.PhotoItem;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -19,12 +19,15 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.example.cs496.ui.main.SectionsPagerAdapter;
+import android.os.Environment;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +35,7 @@ import android.widget.Toast;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,6 +45,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.socket.client.IO;
@@ -53,8 +58,9 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-    public static ArrayList<PhotoItem> imageList = new ArrayList<>();
-    public static int lastImageNum = 0;
+    //public static ArrayList<PhotoItem> imageList = new ArrayList<>();
+    public static ArrayList<Integer> imageList = new ArrayList<>();
+    public static int lastImageNum = 1;
 //    public static int[] picArr = {R.drawable.add_camera, R.drawable.cat, R.drawable.tree, R.drawable.sunflower, R.drawable.rose, R.drawable.panda,
 //            R.drawable.heart, R.drawable.google, R.drawable.tiger, R.drawable.dog, R.drawable.chiba3, R.drawable.chiba,
 //            R.drawable.girl, R.drawable.fruit, R.drawable.beach, R.drawable.bird, R.drawable.chiba2, R.drawable.yun2,
@@ -64,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        imageList.add(new PhotoItem());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermissions();
@@ -111,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
         tabs = findViewById(R.id.tabs);
         //new dummyData();
         new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
+        new GetImageTask().execute("http://143.248.36.220:3000/api/photos");
         //setInitialData();
         //Initializing ViewPager
         viewPager = findViewById(R.id.view_pager);
@@ -452,6 +458,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 // type을 JSONArray로 바꾼 후, setInitialData(JSONArray) 실행
                 ja = new JSONArray(result);
+                setInitialImage(ja);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -492,61 +499,39 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    void setInitialImage(JSONArray ImageArray) throws JSONException{
 
+        imageList = new ArrayList<>();
+        imageList.add(0);
 
-    class DeleteImageTask extends AsyncTask<String, Void, String> {
+        for (int i = 0; i < ImageArray.length(); i++) {
+            int imageId;
+             //한줄씩 object로 바꿔서 해당값 확인 후, datas에 add
+             JSONObject jObject = ImageArray.getJSONObject(i);
 
-        ProgressDialog progressDialog;
+             imageId = jObject.getInt("label");
+             imageList.add(imageId);
+             if(lastImageNum <= imageId) lastImageNum = imageId + 1;
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
+            File file = new File(Environment.getExternalStorageDirectory().toString() + "/Madcamp2/" + imageId + ".jpg");
 
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMessage("Deleting data...");
-            progressDialog.show();
-        }
+            if (!file.exists()) {
+                System.out.println("hello");
+                String imgFileName = imageId + ".jpg";
+                File storageDir = new File(Environment.getExternalStorageDirectory() + "/MadCamp2");
+                Ion.with(this)
+                        .load("http://143.248.36.220:3000/api/photo/" + imageId)
+                        .write(new File(Environment.getExternalStorageDirectory() + "/Madcamp2/" + imageId + ".jpg"))
+                        .setCallback(new FutureCallback<File>() {
+                            @Override
+                            public void onCompleted(Exception e, File file) {
+                                Toast.makeText(getApplicationContext(), "image load", Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                return deleteData(params[0]);
-            } catch (IOException ex) {
-                return "Network error !";
+                File new_file = new File(Environment.getExternalStorageDirectory().toString() + "/Madcamp2/" + imageId + ".jpg");
             }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            System.out.println("delete"+result);
-            if(progressDialog != null){
-                progressDialog.dismiss();
-            }
-        }
-
-        private String deleteData(String urlPath) throws IOException {
-
-            String result = null;
-
-            URL url = new URL(urlPath+"/1");
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setReadTimeout(10000 /* milliseconds */);
-            urlConnection.setConnectTimeout(10000 /* millisecods */);
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
-            urlConnection.connect();
-
-            System.out.println("delete: "+urlConnection.getResponseCode());
-
-            if (urlConnection.getResponseCode() == 200) {
-                result = "Delete Successfully !";
-            } else {
-                result = "Delete failed !";
-            }
-
-            return result;
+            System.out.println("imageList"+imageList);
         }
     }
 }

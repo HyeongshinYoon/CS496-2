@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.example.cs496.MainActivity;
-import android.example.cs496.ui.main.fragment2.PhotoItem;
+//import android.example.cs496.ui.main.fragment2.PhotoItem;
 import android.example.cs496.ui.main.fragment2.Tab2Adapter;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -65,8 +65,8 @@ public class TabFragment2 extends Fragment {
     private Tab2Adapter adapter;
 
     private Context mContext;
+
     private Activity activity;
-    private String photoId;
 
     @Override
     public void onAttach(Context context) {
@@ -117,6 +117,7 @@ public class TabFragment2 extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
                 if (photoFile != null) {
                     Uri providerURI = FileProvider.getUriForFile(mContext, activity.getPackageName(), photoFile);
                     imgUri = providerURI;
@@ -147,19 +148,23 @@ public class TabFragment2 extends Fragment {
                 break;
             }
         }
+
         adapter.notifyDataSetChanged();
     }
 
     public void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
+        System.out.println(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         Objects.requireNonNull(mContext).sendBroadcast(mediaScanIntent);
-        MainActivity.imageList.add(new PhotoItem(contentUri, MainActivity.lastImageNum, photoId));
+        MainActivity.imageList.add(MainActivity.lastImageNum);
         System.out.println(MainActivity.imageList);
+        System.out.println("bye");
+
         Future uploading = Ion.with(mContext)
-                .load("http://143.248.36.220:3000/api/addPhoto/" + MainActivity.lastImageNum)
+                .load("http://143.248.36.220:3000/api/addPhoto")
                 .setMultipartParameter("label", String.valueOf(MainActivity.lastImageNum))
                 .setMultipartFile("data", f)
                 .asString()
@@ -168,7 +173,6 @@ public class TabFragment2 extends Fragment {
                     @Override
                     public void onCompleted(Exception e, Response<String> result) {
                         try {
-                            MainActivity.lastImageNum += 1;
                             JSONObject job = new JSONObject(result.getResult());
                             Toast.makeText(mContext.getApplicationContext(), job.getString("response"), Toast.LENGTH_SHORT).show();
 
@@ -178,44 +182,25 @@ public class TabFragment2 extends Fragment {
 
                     }
                 });
+        MainActivity.lastImageNum += 1;
         Toast.makeText(mContext, "사진이 저장되었습니다", Toast.LENGTH_SHORT).show();
     }
 
     public File createImageFile() throws IOException {
-        final File[] imageFile = new File[1];
-        final File storageDir = new File(Environment.getExternalStorageDirectory() + "/MadCamp2");
+        String imgFileName = String.valueOf(MainActivity.lastImageNum) + ".jpg";
+        File imageFile;
+        File storageDir = new File(Environment.getExternalStorageDirectory() + "/MadCamp2");
         if (!storageDir.exists()) {
             Log.v("알림", "storageDir 존재 x " + storageDir.toString());
             storageDir.mkdirs();
         }
         Log.v("알림", "storageDir 존재함 " + storageDir.toString());
 
-        Future uploading = Ion.with(mContext)
-                .load("http://143.248.36.220:3000/api/addPhoto")
-                .setMultipartParameter("label", String.valueOf(MainActivity.lastImageNum))
-                //.setMultipartFile("data", f)
-                .asString()
-                .withResponse()
-                .setCallback(new FutureCallback<Response<String>>() {
-                    @Override
-                    public void onCompleted(Exception e, Response<String> result) {
-                        try {
-                            JSONObject job = new JSONObject(result.getResult());
-                            photoId = job.getString("_id");
-                            String imgFileName = photoId + ".jpg";
-                            imageFile[0] = new File(storageDir, imgFileName);
-                            Toast.makeText(mContext.getApplicationContext(), job.getString("response"), Toast.LENGTH_SHORT).show();
+        imageFile = new File(storageDir, imgFileName);
+        mCurrentPhotoPath = imageFile.getAbsolutePath();
 
-                        } catch (JSONException e1) {
-                            e1.printStackTrace();
-                        }
-
-                    }
-                });
-        mCurrentPhotoPath = imageFile[0].getAbsolutePath();
-        return imageFile[0];
+        return imageFile;
     }
-
 }
 
 //    class DeleteDataTask extends AsyncTask<String, Void, String> {

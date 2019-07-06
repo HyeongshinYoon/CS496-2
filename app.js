@@ -34,7 +34,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, '..', '..', 'public')))
 
 var router = express.Router();
 
@@ -56,9 +56,7 @@ router.route("/photos").get(galleryController.getPhotos);
 
 router.route("/photo/:label").get(galleryController.getPhoto);
 
-router.route("/addPhoto").post(galleryController.addPhoto);
-
-router.route("/addPhoto/:label").post(upload.single("data"), galleryController.updatePhoto);
+router.route("/addPhoto").post(upload.single("data"), galleryController.addPhoto);
 
 router.route("/deletePhoto/:label").get(galleryController.deletePhoto);
 

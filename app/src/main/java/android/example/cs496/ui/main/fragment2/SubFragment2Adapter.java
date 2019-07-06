@@ -3,20 +3,25 @@ package android.example.cs496.ui.main.fragment2;
 import android.example.cs496.MainActivity;
 import android.example.cs496.R;
 import android.net.Uri;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.github.chrisbanes.photoview.PhotoView;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class SubFragment2Adapter extends PagerAdapter {
     LayoutInflater inflater;
-    private ArrayList<PhotoItem> mData;
-    public SubFragment2Adapter(LayoutInflater inflater, ArrayList<PhotoItem> data) {
+    private ArrayList<Integer> mData;
+    public SubFragment2Adapter(LayoutInflater inflater, ArrayList<Integer> data) {
         this.inflater=inflater;
         this.mData = data;
     }
@@ -31,9 +36,16 @@ public class SubFragment2Adapter extends PagerAdapter {
         inflater = LayoutInflater.from(viewGroup.getContext());
         View view = inflater.inflate(R.layout.tab_fragment2_zoominout, viewGroup, false);
         PhotoView photoView = view.findViewById(R.id.photoView);
-        photoView.setImageURI(MainActivity.imageList.get(position).getUri());
-        //photoView.setImageResource(MainActivity.picArr[position]);
 
+        if(position == 0){
+            photoView.setImageResource(R.drawable.cat);
+        }
+        else {
+            File file = new File(Environment.getExternalStorageDirectory().toString() + "/Madcamp2/" + MainActivity.imageList.get(position) + ".jpg");
+
+            photoView.setImageURI(Uri.fromFile(file));
+            //photoView.setImageResource(MainActivity.picArr[position]);
+        }
         viewGroup.addView(view);
         return view;
     }
