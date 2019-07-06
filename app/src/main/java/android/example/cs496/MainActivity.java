@@ -10,6 +10,7 @@ import android.example.cs496.ui.main.TabFragment2;
 import android.example.cs496.ui.main.TabFragment3;
 import android.example.cs496.ui.main.fragment1.RecyclerItem;
 import android.example.cs496.ui.main.fragment1.dummyData;
+import android.net.Uri;
 import android.example.cs496.ui.main.fragment1.phonebook.GroupPhoneBook;
 import android.example.cs496.ui.main.fragment1.phonebook.SearchPhoneBook;
 import android.os.AsyncTask;
@@ -22,12 +23,15 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.example.cs496.ui.main.SectionsPagerAdapter;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -39,6 +43,7 @@ import android.widget.Toast;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -48,6 +53,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,9 +66,9 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabs;
     private ViewPager viewPager;
     SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+    public static ArrayList<Integer> imageList = new ArrayList<>();
+    public static int lastImageNum = 1;
     Context context;
-    private TextView mResult;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        mResult = (TextView) findViewById(R.id.test);
 
         //new GetDataTask().execute("http://143.248.36.218:3000/api/phones"); 전체 불러옴
         //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
@@ -148,9 +153,9 @@ public class MainActivity extends AppCompatActivity {
         tabs = findViewById(R.id.tabs);
         searchButton = findViewById(R.id.search_button);
         groupButton =  findViewById(R.id.group_button);
-        //new dummyData();
-        new GetDataTask().execute("http://143.248.36.218:3000/api/phones");
-        //setInitialData();
+        new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
+        new GetImageTask().execute("http://143.248.36.220:3000/api/photos");
+
         //Initializing ViewPager
         viewPager = findViewById(R.id.view_pager);
         setupViewPager(viewPager);
@@ -254,6 +259,86 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    class PostDataTask extends AsyncTask<String, Void, String> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setMessage("Inserting data...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params){
+
+            try {
+                return postData(params[0]);
+            } catch (IOException ex){
+                return "Network error !";
+            } catch (JSONException ex){
+                return "Data Invalid !";
+            }
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            if(progressDialog != null) {
+                progressDialog.dismiss();
+            }
+        }
+
+        private String postData(String urlPath) throws IOException, JSONException {
+
+            StringBuilder result = new StringBuilder();
+            BufferedWriter bufferedWriter = null;
+            BufferedReader bufferedReader = null;
+
+            try {
+                JSONObject dataToSend = new JSONObject();
+                dataToSend.put("id", 1);
+                dataToSend.put("name", "Kelly");
+                dataToSend.put("phone", "010-1234-5678");
+                dataToSend.put("group", "KAIST");
+                dataToSend.put("img", "");
+                dataToSend.put("email", "abc@kaist.ac.kr");
+
+                System.out.println("send"+dataToSend);
+                URL url = new URL(urlPath);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setReadTimeout(10000 /* milliseconds */);
+                urlConnection.setConnectTimeout(10000 /* millisecods */);
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setDoOutput(true); //enable output (body data)
+                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+                urlConnection.connect();
+
+                OutputStream outputStream = urlConnection.getOutputStream();
+                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
+                bufferedWriter.write(dataToSend.toString());
+                bufferedWriter.flush();
+
+                InputStream inputStream = urlConnection.getInputStream();
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    result.append(line).append("\n");
+                }
+            } finally {
+                if( bufferedReader != null) {
+                    bufferedReader.close();
+                }
+                if(bufferedWriter != null){
+                    bufferedWriter.close();
+                }
+            }
+            return result.toString();
+        }
+    }
+
     //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
 //    class PostDataTask extends AsyncTask<String, Void, String> {
 //
@@ -282,7 +367,6 @@ public class MainActivity extends AppCompatActivity {
 //        protected void onPostExecute(String result) {
 //            super.onPostExecute(result);
 //
-//            mResult.setText(result);
 //            if(progressDialog != null) {
 //                progressDialog.dismiss();
 //            }
@@ -367,7 +451,6 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
-            mResult.setText(result);
             System.out.println("update"+result);
 
             if(progressDialog != null){
@@ -420,6 +503,170 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    class DeleteDataTask extends AsyncTask<String, Void, String> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setMessage("Deleting data...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                return deleteData(params[0]);
+            } catch (IOException ex) {
+                return "Network error !";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            System.out.println("delete"+result);
+            if(progressDialog != null){
+                progressDialog.dismiss();
+            }
+        }
+
+        private String deleteData(String urlPath) throws IOException {
+
+            String result = null;
+
+            URL url = new URL(urlPath+"/1");
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setReadTimeout(10000 /* milliseconds */);
+            urlConnection.setConnectTimeout(10000 /* millisecods */);
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+            urlConnection.connect();
+
+            System.out.println("delete: "+urlConnection.getResponseCode());
+
+            if (urlConnection.getResponseCode() == 200) {
+                result = "Delete Successfully !";
+            } else {
+                result = "Delete failed !";
+            }
+
+            return result;
+        }
+    }
+
+    class GetImageTask extends AsyncTask<String, Void, String> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setMessage("Loading data...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params){
+
+            try {
+                return getData(params[0]);
+            }catch (IOException ex){
+                return "Network error !";
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+            super.onPostExecute(result);
+
+            // Result(jSONArray가 String 형식으로 들어옴)
+            JSONArray ja = null;
+            try {
+                // type을 JSONArray로 바꾼 후, setInitialData(JSONArray) 실행
+                ja = new JSONArray(result);
+                setInitialImage(ja);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if(progressDialog != null){
+                progressDialog.dismiss();
+            }
+        }
+
+        private String getData(String urlPath) throws IOException {
+            StringBuilder result = new StringBuilder();
+            BufferedReader bufferedReader = null;
+
+            try {
+                URL url = new URL(urlPath);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setReadTimeout(10000 /* milliseconds */);
+                urlConnection.setConnectTimeout(10000 /* millisecods */);
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+                urlConnection.connect();
+
+                InputStream inputStream = urlConnection.getInputStream();
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    result.append(line).append("\n");
+                }
+
+            } finally {
+                if(bufferedReader != null){
+                    bufferedReader.close();
+                }
+            }
+
+            System.out.println(result);
+            return result.toString();
+        }
+    }
+
+    void setInitialImage(JSONArray ImageArray) throws JSONException{
+
+        imageList = new ArrayList<>();
+        imageList.add(0);
+
+        for (int i = 0; i < ImageArray.length(); i++) {
+            int imageId;
+             //한줄씩 object로 바꿔서 해당값 확인 후, datas에 add
+             JSONObject jObject = ImageArray.getJSONObject(i);
+
+             imageId = jObject.getInt("label");
+             imageList.add(imageId);
+             if(lastImageNum <= imageId) lastImageNum = imageId + 1;
+
+            File file = new File(Environment.getExternalStorageDirectory().toString() + "/Madcamp2/" + imageId + ".jpg");
+
+            if (!file.exists()) {
+                System.out.println("hello");
+                String imgFileName = imageId + ".jpg";
+                File storageDir = new File(Environment.getExternalStorageDirectory() + "/MadCamp2");
+                Ion.with(this)
+                        .load("http://143.248.36.220:3000/api/photo/" + imageId)
+                        .write(new File(Environment.getExternalStorageDirectory() + "/Madcamp2/" + imageId + ".jpg"))
+                        .setCallback(new FutureCallback<File>() {
+                            @Override
+                            public void onCompleted(Exception e, File file) {
+                                Toast.makeText(getApplicationContext(), "image load", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                File new_file = new File(Environment.getExternalStorageDirectory().toString() + "/Madcamp2/" + imageId + ".jpg");
+            }
+            System.out.println("imageList"+imageList);
+        }
+    }
 //    class DeleteDataTask extends AsyncTask<String, Void, String> {
 //
 //        ProgressDialog progressDialog;
@@ -446,7 +693,6 @@ public class MainActivity extends AppCompatActivity {
 //        protected void onPostExecute(String result) {
 //            super.onPostExecute(result);
 //
-//            mResult.setText(result);
 //            System.out.println("delete"+result);
 //            if(progressDialog != null){
 //                progressDialog.dismiss();
