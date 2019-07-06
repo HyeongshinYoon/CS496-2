@@ -43,6 +43,8 @@
         <activity android:name="android.example.cs496.ui.main.Fragment2Camera"></activity>
 
         <activity android:name="android.example.cs496.ui.main.MainFragment3Activity"></activity>
+        <activity android:name=".ui.main.fragment1.phonebook.GroupPhoneBook"></activity>
+        <activity android:name=".ui.main.fragment1.phonebook.SearchPhoneBook"></activity>
 
         <meta-data
             android:name="preloaded_fonts"
@@ -57,6 +59,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider" />
         </provider>
+
 
 
 

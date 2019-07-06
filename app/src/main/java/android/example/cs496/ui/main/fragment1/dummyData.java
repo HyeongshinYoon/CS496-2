@@ -25,108 +25,11 @@ public class dummyData {
     static List<RecyclerItem> datas = new ArrayList<>();
     private static int lastNum = 0;
 
-    /*public dummyData() throws JSONException {
-        //person의 한명 정보가 들어갈 JSONObject 선언
-        personArray = new JSONArray();
-        JSONObject personInfo = new JSONObject();
-
-        //정보 입력
-        personInfo.put("id", 0);
-        personInfo.put("name", "");
-        personInfo.put("img", R.drawable.ic_addperson);
-        personInfo.put("phone", "");
-        personInfo.put("group", "");
-        personInfo.put("email", "");
-        personArray.put(personInfo);
-
-        personInfo = new JSONObject();
-        personInfo.put("id", 1);
-        personInfo.put("name", "Amy");
-        personInfo.put("img", R.drawable.ic_launcher_foreground_primarylight);
-        personInfo.put("phone", "010-6355-5770");
-        personInfo.put("group", "KAIST");
-        personInfo.put("email", "helloworld@kaist.ac.kr");
-        personArray.put(personInfo);
-
-        personInfo = new JSONObject();
-        personInfo.put("id", 2);
-        personInfo.put("name", "Olivia");
-        personInfo.put("img", R.drawable.ic_launcher_foreground_primarylight);
-        personInfo.put("phone", "010-2345-6789");
-        personInfo.put("group", "DGIST");
-        personInfo.put("email", "freedom@dgist.ac.kr");
-        personArray.put(personInfo);
-
-        personInfo = new JSONObject();
-        personInfo.put("id", 3);
-        personInfo.put("name", "Hazel");
-        personInfo.put("img", R.drawable.ic_launcher_foreground_primarylight);
-        personInfo.put("phone", "010-3456-7890");
-        personInfo.put("group", "UNIST");
-        personInfo.put("email", "vacation@unist.ac.kr");
-        personArray.put(personInfo);
-
-        personInfo = new JSONObject();
-        personInfo.put("id", 4);
-        personInfo.put("name", "Porter");
-        personInfo.put("img", R.drawable.ic_launcher_foreground_primarylight);
-        personInfo.put("phone", "010-4567-8901");
-        personInfo.put("group", "GIST");
-        personInfo.put("email", "happy@gist.ac.kr");
-        personArray.put(personInfo);
-
-        personInfo = new JSONObject();
-        personInfo.put("id", 5);
-        personInfo.put("name", "Jimmy");
-        personInfo.put("img", R.drawable.ic_launcher_foreground_primarylight);
-        personInfo.put("phone", "010-9876-5432");
-        personInfo.put("group", "Korea.Univ");
-        personInfo.put("email", "trust@korea.ac.kr");
-        personArray.put(personInfo);
-
-        personInfo = new JSONObject();
-        personInfo.put("id", 6);
-        personInfo.put("name", "Emma");
-        personInfo.put("img", R.drawable.ic_launcher_foreground_primarylight);
-        personInfo.put("phone", "010-8765-4321");
-        personInfo.put("group", "Korea.Univ");
-        personInfo.put("email", "faith@cam.ac.uk");
-        personArray.put(personInfo);
-
-        personInfo = new JSONObject();
-        personInfo.put("id", 7);
-        personInfo.put("name", "Kelly");
-        personInfo.put("img", R.drawable.ic_launcher_foreground_primarylight);
-        personInfo.put("phone", "010-8885-2341");
-        personInfo.put("group", "");
-        personInfo.put("email", "bye@cam.ac.uk");
-        personArray.put(personInfo);
-
-        personInfo = new JSONObject();
-        personInfo.put("id", 8);
-        personInfo.put("name", "Zoe");
-        personInfo.put("img", R.drawable.ic_launcher_foreground_primarylight);
-        personInfo.put("phone", "010-1212-9871");
-        personInfo.put("group", "KAIST");
-        personInfo.put("email", "cs496.happy@kaist.ac.kr");
-        personArray.put(personInfo);
-
-        personInfo = new JSONObject();
-        personInfo.put("id", 9);
-        personInfo.put("name", "Aria");
-        personInfo.put("img", R.drawable.ic_launcher_foreground_primarylight);
-        personInfo.put("phone", "010-3333-5544");
-        personInfo.put("group", "");
-        personInfo.put("email", "good_day@naver.com");
-        personArray.put(personInfo);
-    }*/
-
     public static void setInitialData(JSONArray personArray) throws JSONException {
         datas = new ArrayList<>();
-
         RecyclerItem data = new RecyclerItem(0, "", R.drawable.ic_addperson, "", "", "");
         datas.add(data);
-
+        //제이슨 어레이를 받아 그 안에 있는 제이슨 오브젝트 하나하나를 리사이클러 아이템으로 바꾼 후,
         for (int i = 0; i < personArray.length(); i++) {
             int img;
             String phone, group, email;
@@ -157,7 +60,7 @@ public class dummyData {
             data = new RecyclerItem(id, name, img, phone, group, email);
             datas.add(data);
 
-            if(lastNum < id) lastNum = id + 1;
+            if(lastNum <= id) lastNum = id + 1;
         }
         //이름순 정렬 - sort (RecyclerItem)
         Collections.sort(datas);
@@ -207,7 +110,7 @@ public class dummyData {
         datas.remove(real_position);
     }
 
-    public static void insertData(RecyclerItem new_item) {
+    public static int insertData(RecyclerItem new_item) {
 
         // PostDataTask
         new_item.setImg(R.drawable.ic_launcher_foreground_primarylight);
@@ -215,5 +118,6 @@ public class dummyData {
         lastNum += 1;
         datas.add(new_item);
         Collections.sort(datas);
+        return new_item.getId();
     }
 }

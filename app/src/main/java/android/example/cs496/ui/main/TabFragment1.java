@@ -19,13 +19,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
@@ -54,9 +58,35 @@ public class TabFragment1 extends Fragment {
         View v = inflater.inflate(R.layout.tab_fragment1,container,false);
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        resetData();
+
+        resetData();// refresh data, set Recyclerview
 
         enableSwipe();
+
+        final FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                //layoutManager.scrollToPositionWithOffset(0,0);
+                //recyclerView.smoothScrollToPosition(0);
+                recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView,new RecyclerView.State(), 0);
+
+
+            }
+        });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy==0){
+                    fab.hide();
+                }else {
+                    fab.show();
+                }
+            }
+        });
+
         recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(context.getApplicationContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
@@ -78,7 +108,8 @@ public class TabFragment1 extends Fragment {
                 }));
         return v;
     }
-    private void enableSwipe(){
+
+    private void enableSwipe(){// 옆으로 밀어서 삭제&삭제 취소
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(1, ItemTouchHelper.RIGHT) {
 
             @Override
@@ -88,12 +119,15 @@ public class TabFragment1 extends Fragment {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                if (direction == ItemTouchHelper.RIGHT && viewHolder.getAdapterPosition()!=0){
+                if (direction == ItemTouchHelper.RIGHT && viewHolder.getAdapterPosition()!=0){//오른쪽으로 밀고, 그 위치가 0이 아니면
                     int position = viewHolder.getAdapterPosition();
                     final RecyclerItem deletedModel = datas.get(position);
+                    int deletedId = deletedModel.getId();
                     final int deletedPosition = position;
                     // showing snack bar with Undo option
-                    adapter.removeItem(position);
+                    adapter.removeItem(position, deletedId);
+
+                    // 잘못 눌렀을 때 다시 돌아오는 부분
                     Snackbar snackbar = Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), " removed from Contacts!", Snackbar.LENGTH_LONG);
                     snackbar.setAction("UNDO", new View.OnClickListener() {
                         @Override
@@ -143,6 +177,9 @@ public class TabFragment1 extends Fragment {
         datas = refreshData();
         adapter = new Tab1Adapter(context, datas);
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
+        //layoutManager.scrollToPositionWithOffset(0,0);
+        recyclerView.setLayoutManager(layoutManager);
+
     }
 }

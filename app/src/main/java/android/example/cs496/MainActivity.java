@@ -1,14 +1,18 @@
 package android.example.cs496;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.app.ProgressDialog;
 import android.example.cs496.ui.main.SectionsPagerAdapter;
 import android.example.cs496.ui.main.TabFragment1;
 import android.example.cs496.ui.main.TabFragment2;
 import android.example.cs496.ui.main.TabFragment3;
+import android.example.cs496.ui.main.fragment1.RecyclerItem;
 import android.example.cs496.ui.main.fragment1.dummyData;
-//import android.example.cs496.ui.main.fragment2.PhotoItem;
 import android.net.Uri;
+import android.example.cs496.ui.main.fragment1.phonebook.GroupPhoneBook;
+import android.example.cs496.ui.main.fragment1.phonebook.SearchPhoneBook;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,6 +32,10 @@ import org.json.JSONObject;
 
 import android.example.cs496.ui.main.SectionsPagerAdapter;
 import android.os.Environment;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,39 +54,71 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-
-import io.socket.client.IO;
+import java.util.Map;
 
 import static android.example.cs496.ui.main.fragment1.dummyData.setInitialData;
 
 public class MainActivity extends AppCompatActivity {
-
+    ImageButton searchButton;
+    ImageButton groupButton;
     private TabLayout tabs;
     private ViewPager viewPager;
     SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-    //public static ArrayList<PhotoItem> imageList = new ArrayList<>();
     public static ArrayList<Integer> imageList = new ArrayList<>();
     public static int lastImageNum = 1;
-//    public static int[] picArr = {R.drawable.add_camera, R.drawable.cat, R.drawable.tree, R.drawable.sunflower, R.drawable.rose, R.drawable.panda,
-//            R.drawable.heart, R.drawable.google, R.drawable.tiger, R.drawable.dog, R.drawable.chiba3, R.drawable.chiba,
-//            R.drawable.girl, R.drawable.fruit, R.drawable.beach, R.drawable.bird, R.drawable.chiba2, R.drawable.yun2,
-//            R.drawable.yun3, R.drawable.yun4, R.drawable.yun5, R.drawable.iu, R.drawable.view, R.drawable.goeun_img1,
-//            R.drawable.goeun_img2};
+    Context context;
+    private TextView mResult;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        context = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermissions();
-
-        //new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
-        //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone");
-        //new PutDataTask().execute("http://143.248.36.220:3000/api/updatePhone/:id");
-        //new DeleteDataTask().execute("http://143.248.36.220:3000/api/deletePhone/:id");
         initView();
+        ///////
+//        Map<String, String> map = new HashMap<String, String>();
+//        map.put("KEY","value");
+//
+//        System.out.println(map.get("KEY"));
+//        System.out.println(map[0]);
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/2");
+                Toast.makeText(MainActivity.this, "search", Toast.LENGTH_SHORT).show();
+                //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/5","5","업데이트완료","010-0000-4141","업데이트그룹","이미지","업데이트이메일");
+                //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/112","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일"); 해당 id 삭제
+                //아이디도 스트링으로 받아서, 그 안에서 다시 정수로 변환해줘야
+                //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일");
+                //Intent intent = new Intent(MainActivity.this, SearchPhoneBook.class);
+                //startActivityForResult(intent,0);
+
+            }
+        });
+        groupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Toast.makeText(MainActivity.this, "group", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, GroupPhoneBook.class);
+                startActivityForResult(intent,0);
+
+            }
+        });
+        mResult = (TextView) findViewById(R.id.test);
+
+        //new GetDataTask().execute("http://143.248.36.218:3000/api/phones"); 전체 불러옴
+        //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
+        //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/:id"); 주소록 바뀐 사람 추가하기, id 기준
+        //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/:id"); 해당 id 삭제
+        // 영연 143.248.36.218
+        //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone", );
+
     }
 
     public void setupViewPager(ViewPager mViewPager) {
@@ -114,21 +154,30 @@ public class MainActivity extends AppCompatActivity {
     public void initView(){
         //Initializing the TabLayout;
         tabs = findViewById(R.id.tabs);
-        //new dummyData();
+        searchButton = findViewById(R.id.search_button);
+        groupButton =  findViewById(R.id.group_button);
         new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
         new GetImageTask().execute("http://143.248.36.220:3000/api/photos");
-        //setInitialData();
+
         //Initializing ViewPager
         viewPager = findViewById(R.id.view_pager);
         setupViewPager(viewPager);
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
         tabs.setupWithViewPager(viewPager);
-
+        //selecting tabs
         tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+                //검색, 그룹 버튼이 Tab1에만 보이도록
+                if(tab.getPosition()==0){
+                    searchButton.setVisibility(View.VISIBLE);
+                    groupButton.setVisibility(View.VISIBLE);
+                }else {
+                    searchButton.setVisibility(View.INVISIBLE);
+                    groupButton.setVisibility(View.INVISIBLE);
+                }
             }
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
@@ -138,7 +187,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+    // 데이터베이스에서 가져오거나 보내는 4가지
+    // 데이터베이스에서 모든 데이터 가져오기
     class GetDataTask extends AsyncTask<String, Void, String> {
 
         ProgressDialog progressDialog;
@@ -153,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params){
-
+            // initialize and config request, then connect to server
             try {
                 return getData(params[0]);
             }catch (IOException ex){
@@ -292,6 +342,91 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
+//    class PostDataTask extends AsyncTask<String, Void, String> {
+//
+//        ProgressDialog progressDialog;
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            progressDialog = new ProgressDialog(MainActivity.this);
+//            progressDialog.setMessage("Inserting data...");
+//            progressDialog.show();
+//        }
+//
+//        @Override
+//        protected String doInBackground(String... params){
+//
+//            try {
+//                return postData(params[0], params[1], params[2], params[3], params[4], params[5],params[6]);
+//            } catch (IOException ex){
+//                return "Network error !";
+//            } catch (JSONException ex){
+//                return "Data Invalid !";
+//            }
+//        }
+//        @Override
+//        protected void onPostExecute(String result) {
+//            super.onPostExecute(result);
+//
+//            mResult.setText(result);
+//            if(progressDialog != null) {
+//                progressDialog.dismiss();
+//            }
+//        }
+//
+//        private String postData(String urlPath, String strId, String name, String phone, String group, String img, String email) throws IOException, JSONException {
+//
+//            StringBuilder result = new StringBuilder();
+//            BufferedWriter bufferedWriter = null;
+//            BufferedReader bufferedReader = null;
+//
+//            int id = Integer.parseInt(strId);
+//
+//            try {
+//                JSONObject dataToSend = new JSONObject();
+//                dataToSend.put("id", id);
+//                dataToSend.put("name", name);
+//                dataToSend.put("phone", phone);
+//                dataToSend.put("group", group);
+//                dataToSend.put("img", "");
+//                dataToSend.put("email", email);
+//
+//                System.out.println("send"+dataToSend);
+//                URL url = new URL(urlPath);
+//                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//                urlConnection.setReadTimeout(10000 /* milliseconds */);
+//                urlConnection.setConnectTimeout(10000 /* millisecods */);
+//                urlConnection.setRequestMethod("POST");
+//                urlConnection.setDoOutput(true); //enable output (body data)
+//                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+//                urlConnection.connect();
+//
+//                OutputStream outputStream = urlConnection.getOutputStream();
+//                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
+//                bufferedWriter.write(dataToSend.toString());
+//                bufferedWriter.flush();
+//
+//                InputStream inputStream = urlConnection.getInputStream();
+//                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+//                String line;
+//                while ((line = bufferedReader.readLine()) != null) {
+//                    result.append(line).append("\n");
+//                }
+//            } finally {
+//                if( bufferedReader != null) {
+//                    bufferedReader.close();
+//                }
+//                if(bufferedWriter != null){
+//                    bufferedWriter.close();
+//                }
+//            }
+//            return result.toString();
+//        }
+//    }
+
+    //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/:id"); 주소록 바뀐 사람 추가하기, id 기준
     class PutDataTask extends AsyncTask<String, Void, String> {
 
         ProgressDialog progressDialog;
@@ -300,15 +435,15 @@ public class MainActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMessage("Updating data...");
-            progressDialog.show();
+//            progressDialog = new ProgressDialog(MainActivity.this);
+//            progressDialog.setMessage("Updating data...");
+//            progressDialog.show();
         }
 
         @Override
         protected String doInBackground(String... params) {
             try {
-                return putData(params[0]);
+                return putData(params[0], params[1], params[2], params[3], params[4], params[5],params[6]);
             } catch (IOException ex) {
                 return "Network Error !";
             } catch (JSONException ex) {
@@ -327,21 +462,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        private String putData(String urlPath) throws IOException, JSONException {
+        private String putData(String urlPath, String strId, String name, String phone, String group, String img, String email) throws IOException, JSONException {
 
             BufferedWriter bufferedWriter = null;
             String result = null;
 
+            int id = Integer.parseInt(strId);
+
             try {
                 JSONObject dataToSend = new JSONObject();
-                dataToSend.put("id", 1);
-                dataToSend.put("name", "Oliv");
-                dataToSend.put("phone", "010-1234-5678");
-                dataToSend.put("group", "UNIST");
+                dataToSend.put("id", id);
+                dataToSend.put("name", name);
+                dataToSend.put("phone", phone);
+                dataToSend.put("group", group);
                 dataToSend.put("img", "");
-                dataToSend.put("email", "abc@kaist.ac.kr");
+                dataToSend.put("email", email);
 
-                URL url = new URL(urlPath+"/1");
+                URL url = new URL(urlPath);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setReadTimeout(10000 /* milliseconds */);
                 urlConnection.setConnectTimeout(10000 /* millisecods */);
@@ -349,7 +486,7 @@ public class MainActivity extends AppCompatActivity {
                 urlConnection.setDoOutput(true); //enable output (body data)
                 urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
                 urlConnection.connect();
-
+                // write data into server
                 OutputStream outputStream = urlConnection.getOutputStream();
                 bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
                 bufferedWriter.write(dataToSend.toString());
@@ -534,4 +671,60 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("imageList"+imageList);
         }
     }
+//    class DeleteDataTask extends AsyncTask<String, Void, String> {
+//
+//        ProgressDialog progressDialog;
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//
+//            progressDialog = new ProgressDialog(MainActivity.this);
+//            progressDialog.setMessage("Deleting data...");
+//            progressDialog.show();
+//        }
+//
+//        @Override
+//        protected String doInBackground(String... params) {
+//            try {
+//                return deleteData(params[0]);
+//            } catch (IOException ex) {
+//                return "Network error !";
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String result) {
+//            super.onPostExecute(result);
+//
+//            mResult.setText(result);
+//            System.out.println("delete"+result);
+//            if(progressDialog != null){
+//                progressDialog.dismiss();
+//            }
+//        }
+//
+//        private String deleteData(String urlPath) throws IOException {
+//
+//            String result = null;
+//
+//            URL url = new URL(urlPath);
+//            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//            urlConnection.setReadTimeout(10000 /* milliseconds */);
+//            urlConnection.setConnectTimeout(10000 /* millisecods */);
+//            urlConnection.setRequestMethod("GET");
+//            urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+//            urlConnection.connect();
+//
+//            System.out.println("delete: "+urlConnection.getResponseCode());
+//
+//            if (urlConnection.getResponseCode() == 200) {
+//                result = "Delete Successfully !";
+//            } else {
+//                result = "Delete failed !";
+//            }
+//
+//            return result;
+//        }
+//    }
 }
