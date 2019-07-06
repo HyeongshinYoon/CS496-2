@@ -69,8 +69,6 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<Integer> imageList = new ArrayList<>();
     public static int lastImageNum = 1;
     Context context;
-    private TextView mResult;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        mResult = (TextView) findViewById(R.id.test);
 
         //new GetDataTask().execute("http://143.248.36.218:3000/api/phones"); 전체 불러옴
         //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
@@ -370,7 +367,6 @@ public class MainActivity extends AppCompatActivity {
 //        protected void onPostExecute(String result) {
 //            super.onPostExecute(result);
 //
-//            mResult.setText(result);
 //            if(progressDialog != null) {
 //                progressDialog.dismiss();
 //            }
@@ -697,7 +693,6 @@ public class MainActivity extends AppCompatActivity {
 //        protected void onPostExecute(String result) {
 //            super.onPostExecute(result);
 //
-//            mResult.setText(result);
 //            System.out.println("delete"+result);
 //            if(progressDialog != null){
 //                progressDialog.dismiss();
