@@ -96,20 +96,4 @@ public class Tab2Adapter extends BaseAdapter {
         }
         return convertView;
     }
-
-//        if (position==0) {
-//            viewHolder.img.setImageResource(R.drawable.add_camera);
-//            int colorPrimaryLight = context.getResources().getColor(R.color.colorPrimaryLight);
-//            OvalShape ovalShape = new OvalShape();
-//            ovalShape.resize(30, 30);
-//            ShapeDrawable bgShape = new ShapeDrawable(ovalShape);
-//            viewHolder.img.setBackground(bgShape);
-//            bgShape.setTint(colorPrimaryLight);
-//            viewHolder.img.setClipToOutline(true);
-//            viewHolder.img.setScaleType(ImageView.ScaleType.CENTER);
-//        }else
-//            viewHolder.img.setImageURI(MainActivity.imageList.get(position).getUri());
-////        if (position!=0) {viewHolder.img.setImageResource(MainActivity.picArr[position]);}
-//        return convertView;
-//    }
 }

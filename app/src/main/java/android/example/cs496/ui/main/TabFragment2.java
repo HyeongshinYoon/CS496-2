@@ -63,6 +63,7 @@ public class TabFragment2 extends Fragment {
     private static final int FROM_CAMERA = 0;
     GridView gridView;
     private Tab2Adapter adapter;
+    private LayoutInflater mInflater;
 
     private Context mContext;
 
@@ -81,7 +82,7 @@ public class TabFragment2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.tab_fragment2, container, false);
-
+        mInflater = inflater;
         gridView = view.findViewById(R.id.gridView1);
         adapter = new Tab2Adapter(mContext, inflater, MainActivity.imageList);
         gridView.setAdapter(adapter);
@@ -128,6 +129,8 @@ public class TabFragment2 extends Fragment {
         } else {
             Log.v("알림", "저장공간에 접근 불가능");
         }
+        adapter = new Tab2Adapter(mContext, mInflater, MainActivity.imageList);
+        gridView.setAdapter(adapter);
     }
 
     @Override

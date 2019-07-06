@@ -7,13 +7,10 @@ import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.github.chrisbanes.photoview.PhotoView;
-import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Ion;
 
 import java.io.File;
 import java.util.ArrayList;
