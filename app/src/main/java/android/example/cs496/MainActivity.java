@@ -1,25 +1,33 @@
 package android.example.cs496;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.app.ProgressDialog;
 import android.example.cs496.ui.main.SectionsPagerAdapter;
 import android.example.cs496.ui.main.TabFragment1;
 import android.example.cs496.ui.main.TabFragment2;
 import android.example.cs496.ui.main.TabFragment3;
-import android.example.cs496.ui.main.fragment1.RecyclerItem;
-import android.example.cs496.ui.main.fragment1.dummyData;
-import android.net.Uri;
 import android.example.cs496.ui.main.fragment1.phonebook.GroupPhoneBook;
-import android.example.cs496.ui.main.fragment1.phonebook.SearchPhoneBook;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.material.tabs.TabLayout;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
@@ -30,17 +38,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.example.cs496.ui.main.SectionsPagerAdapter;
-import android.os.Environment;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -50,17 +47,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static android.example.cs496.ui.main.fragment1.dummyData.setInitialData;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "";
     ImageButton searchButton;
     ImageButton groupButton;
     private TabLayout tabs;
@@ -69,21 +63,21 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<Integer> imageList = new ArrayList<>();
     public static int lastImageNum = 1;
     Context context;
+    private CallbackManager callbackManager;
+
+    LoginButton facebook_login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         context = this;
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
         setContentView(R.layout.activity_main);
         checkPermissions();
         initView();
-        ///////
-//        Map<String, String> map = new HashMap<String, String>();
-//        map.put("KEY","value");
-//
-//        System.out.println(map.get("KEY"));
-//        System.out.println(map[0]);
+        facebook_login();
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
                 //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일");
                 //Intent intent = new Intent(MainActivity.this, SearchPhoneBook.class);
                 //startActivityForResult(intent,0);
-
             }
         });
         groupButton.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
                 //Toast.makeText(MainActivity.this, "group", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, GroupPhoneBook.class);
                 startActivityForResult(intent,0);
-
             }
         });
 
@@ -153,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         tabs = findViewById(R.id.tabs);
         searchButton = findViewById(R.id.search_button);
         groupButton =  findViewById(R.id.group_button);
+        facebook_login = findViewById(R.id.login_button);
         new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
         new GetImageTask().execute("http://143.248.36.220:3000/api/photos");
 
@@ -168,12 +161,19 @@ public class MainActivity extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
                 //검색, 그룹 버튼이 Tab1에만 보이도록
+                int tab_position = tab.getPosition();
+
                 if(tab.getPosition()==0){
                     searchButton.setVisibility(View.VISIBLE);
                     groupButton.setVisibility(View.VISIBLE);
                 }else {
                     searchButton.setVisibility(View.INVISIBLE);
                     groupButton.setVisibility(View.INVISIBLE);
+                }
+                if(tab.getPosition() == 2){
+                    facebook_login.setVisibility(View.VISIBLE);
+                }else {
+                    facebook_login.setVisibility(View.INVISIBLE);
                 }
             }
             @Override
@@ -667,6 +667,54 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("imageList"+imageList);
         }
     }
+
+    private void facebook_login(){
+        //facebook
+        callbackManager = CallbackManager.Factory.create();
+        facebook_login = findViewById(R.id.login_button);
+        //facebook_login.setReadPermissions("email");
+
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        // App code
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // App code
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        // App code
+                    }
+                });
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+
+//    private void getHashKey() {
+//        try {
+//            PackageInfo info = getPackageManager().getPackageInfo(this.getPackageName(), PackageManager.GET_SIGNATURES);
+//            for (Signature signature : info.signatures) {
+//                MessageDigest md = MessageDigest.getInstance("SHA");
+//                md.update(signature.toByteArray());
+//                Log.d(TAG, "key_hash=" + Base64.encodeToString(md.digest(), Base64.DEFAULT));
+//            }
+//        } catch (PackageManager.NameNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
 //    class DeleteDataTask extends AsyncTask<String, Void, String> {
 //
 //        ProgressDialog progressDialog;

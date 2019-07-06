@@ -37,6 +37,7 @@
                 android:backgroundTint="@color/colorPrimaryLight"
                 android:layout_gravity="end|top"
                 android:layout_marginRight="30dp"
+                android:visibility="invisible"
 
                 />
 
@@ -48,18 +49,40 @@
                 android:backgroundTint="@color/colorPrimaryLight"
                 android:layout_gravity="end|top"
                 android:layout_marginRight="5dp"
-
+                android:visibility="invisible"
                 />
 
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/login_button"
+                android:layout_width="27dp"
+                android:layout_height="20dp"
+                android:layout_gravity="end|center"
+                android:layout_marginRight="10dp"
+                android:visibility="invisible"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="right|center">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center"
+                    android:text="hello Hyeongshin!"
+                    android:textStyle="bold"/>
+                <Button
+                    android:id="@+id/set_btn"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="end|center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="15dp"
+                    android:backgroundTint="#000"
+                    android:background="@drawable/setting"
+                    android:textSize="8dp"/>
+            </LinearLayout>
 
         </FrameLayout>
-
-
-
-
-
-
-
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
@@ -73,11 +96,5 @@
         android:layout_height="match_parent"
         android:layout_marginTop="3dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-
-
-
-
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
