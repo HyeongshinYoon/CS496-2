@@ -47,4 +47,5 @@ dependencies {
 
     implementation 'com.koushikdutta.ion:ion:2.+'
     implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
+    implementation 'org.jsoup:jsoup:1.11.3'
 }
