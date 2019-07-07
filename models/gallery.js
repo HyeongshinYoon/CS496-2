@@ -3,7 +3,8 @@ var mongoose = require('mongoose');
 // Define Schemas
 var photoSchema = new mongoose.Schema({
   path:  {
-    type: String
+    type: String,
+    required: true
   },
   label: {
     type: String,

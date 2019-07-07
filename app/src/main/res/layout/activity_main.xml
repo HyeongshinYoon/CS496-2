@@ -63,13 +63,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_gravity="right|center">
+                android:layout_gravity="right|center"
+                android:visibility="invisible"
+                android:id="@+id/is_login">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end|center"
                     android:text="hello Hyeongshin!"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:id="@+id/userName"/>
                 <Button
                     android:id="@+id/set_btn"
                     android:layout_width="20dp"

@@ -15,20 +15,25 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.material.tabs.TabLayout;
+import com.google.gson.JsonObject;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.koushikdutta.async.future.FutureCallback;
@@ -66,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
 
     LoginButton facebook_login;
+    LinearLayout is_login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
                 .setPermissionListener(permissionlistener)
                 .setDeniedMessage("If you reject permission, you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
                 .setPermissions(new String[] {
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.READ_CONTACTS,
                         Manifest.permission.CALL_PHONE,
                         Manifest.permission.CAMERA,
@@ -146,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
         searchButton = findViewById(R.id.search_button);
         groupButton =  findViewById(R.id.group_button);
         facebook_login = findViewById(R.id.login_button);
+        is_login = findViewById(R.id.is_login);
         new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
         new GetImageTask().execute("http://143.248.36.220:3000/api/photos");
 
@@ -161,7 +167,9 @@ public class MainActivity extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
                 //검색, 그룹 버튼이 Tab1에만 보이도록
-                int tab_position = tab.getPosition();
+                AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+                
 
                 if(tab.getPosition()==0){
                     searchButton.setVisibility(View.VISIBLE);
@@ -170,10 +178,15 @@ public class MainActivity extends AppCompatActivity {
                     searchButton.setVisibility(View.INVISIBLE);
                     groupButton.setVisibility(View.INVISIBLE);
                 }
-                if(tab.getPosition() == 2){
+                if(tab.getPosition() == 2 && !isLoggedIn){
                     facebook_login.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     facebook_login.setVisibility(View.INVISIBLE);
+                    if(isLoggedIn){
+                        is_login.setVisibility(View.VISIBLE);
+                    } else {
+                        is_login.setVisibility(View.INVISIBLE);
+                    }
                 }
             }
             @Override
@@ -672,23 +685,66 @@ public class MainActivity extends AppCompatActivity {
         //facebook
         callbackManager = CallbackManager.Factory.create();
         facebook_login = findViewById(R.id.login_button);
-        //facebook_login.setReadPermissions("email");
+        facebook_login.setReadPermissions("email");
 
-        LoginManager.getInstance().registerCallback(callbackManager,
-                new FacebookCallback<LoginResult>() {
+        facebook_login.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        // App code
+                        String userId = loginResult.getAccessToken().getUserId();
+                        Log.d("TAG", "페이스북 UserID -> " + loginResult.getAccessToken().getUserId());
+                        GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                Log.d("TAG", "페이스북 로그인 결과"+response.toString());
+                                try {
+                                    String id = object.getString("id");
+                                    String name = object.getString("name");
+                                    userLoginSuccess(id, name);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", "id,name");
+                        request.setParameters(parameters);
+                        request.executeAsync();
                     }
 
                     @Override
                     public void onCancel() {
-                        // App code
+                        Log.d("TAG", "취소됨");
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
-                        // App code
+                        exception.printStackTrace();
+                    }
+                });
+    }
+    private void userLoginSuccess(final String id, final String name){
+        Ion.with(context)
+                .load("http://143.248.36.220:3000/api/user/id")
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        if(result == null){
+                            JsonObject json = new JsonObject();
+                            json.addProperty("id", id);
+                            json.addProperty("name", name);
+
+                            Ion.with(context)
+                                    .load("http://example.com/post")
+                                    .setJsonObjectBody(json)
+                                    .asJsonObject()
+                                    .setCallback(new FutureCallback<JsonObject>() {
+                                        @Override
+                                        public void onCompleted(Exception e, JsonObject result) {
+                                            // do stuff with the result or error
+                                        }
+                                    });
+                        }
                     }
                 });
     }
