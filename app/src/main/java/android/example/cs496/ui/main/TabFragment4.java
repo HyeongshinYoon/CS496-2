@@ -5,47 +5,32 @@ import android.content.Context;
 import android.content.Intent;
 import android.example.cs496.R;
 import android.example.cs496.ui.main.fragment1.MainBackPressCloseHandler;
-import android.example.cs496.ui.main.fragment1.PhoneBookActivity;
 import android.example.cs496.ui.main.fragment1.RecyclerItem;
 import android.example.cs496.ui.main.fragment1.RecyclerItemClickListener;
 import android.example.cs496.ui.main.fragment1.Tab1Adapter;
-import android.example.cs496.ui.main.fragment1.phonebook.EditPhoneBook;
 import android.example.cs496.ui.main.fragment4.ItemObject;
 import android.example.cs496.ui.main.fragment4.RestaurantBookActivity;
-import android.example.cs496.ui.main.fragment4.RestaurantMenuAdapter;
 import android.example.cs496.ui.main.fragment4.Tab4Adapter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.Toast;
-import androidx.annotation.NonNull;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import org.json.JSONObject;
-import org.jsoup.Connection;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import static android.example.cs496.ui.main.fragment1.dummyData.refreshData;
 
 
 public class TabFragment4 extends Fragment {
@@ -127,13 +112,13 @@ public class TabFragment4 extends Fragment {
                     String menu = menuArray.get(i);
                     String[] menuSplited = menu.split(" "); // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 엘리멘트 나누는 함수 필요
 
-                    totalArray.add(new ItemObject(store, menuSplited));
-                    System.out.println(i);
-                    System.out.println(totalArray.get(i).getTitle());
-                    System.out.println(menu);
-                    for(int j=0; j<=totalArray.get(i).getMenus().length -1; j++){
-                        System.out.println(totalArray.get(i).getMenus()[j]);
-                    }
+//                    totalArray.add(new ItemObject(store, menuSplited));
+//                    System.out.println(i);
+//                    System.out.println(totalArray.get(i).getTitle());
+//                    System.out.println(menu);
+//                    for(int j=0; j<=totalArray.get(i).getMenus().size() -1; j++){
+//                        System.out.println(totalArray.get(i).getMenus().get(j));
+//                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
