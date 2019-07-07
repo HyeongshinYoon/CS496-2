@@ -11,6 +11,8 @@ import android.example.cs496.ui.main.fragment1.RecyclerItemClickListener;
 import android.example.cs496.ui.main.fragment1.Tab1Adapter;
 import android.example.cs496.ui.main.fragment1.phonebook.EditPhoneBook;
 import android.example.cs496.ui.main.fragment4.ItemObject;
+import android.example.cs496.ui.main.fragment4.RestaurantBookActivity;
+import android.example.cs496.ui.main.fragment4.RestaurantMenuAdapter;
 import android.example.cs496.ui.main.fragment4.Tab4Adapter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -40,6 +42,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import static android.example.cs496.ui.main.fragment1.dummyData.refreshData;
@@ -70,10 +73,23 @@ public class TabFragment4 extends Fragment {
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
-        //resetData();// refresh data, set Recyclerview
-        new Description().execute();
+        //resetData();// refresh data, set Recyclerview@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@바로바로 업데이트 되게
+        new Description().execute(); // 받아오고 연결하는 과정
+
+        recyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(context.getApplicationContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        Intent intent =new Intent(context, RestaurantBookActivity.class);
+                        ItemObject item = totalArray.get(position); // 아이템 오브젝트 하나
+                        intent.putExtra("store_select", item); //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 아이템 데이터 타입 확인, 이렇게 해도 가능??
+                        intent.putExtra("store_state", "1"); //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 여기 스테이트 의미가 없나?? 아마 없을 듯 아래의 리퀘스트코드
+                        startActivityForResult(intent,0);
+                    }
+                }));
         return v;
     }
+
     private class Description extends AsyncTask<Void, Void, Void> {
 
         //진행바표시
@@ -100,28 +116,25 @@ public class TabFragment4 extends Fragment {
 
                 for(Element element : elements) {
                     String my_title = element.text();
-                    //System.out.println(my_title);
                     storeArray.add(my_title);
                 }
                 for(Element element : menus){
                     String my_menu = element.text();
-                    //System.out.println(my_menu);
                     menuArray.add(my_menu);
                 }
                 for(int i=0; i<=mSize-1; i++){
-                    System.out.println(i);
                     String store = storeArray.get(i);
                     String menu = menuArray.get(i);
-                    String[] menuSplited = menu.split(" ");
+                    String[] menuSplited = menu.split(" "); // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 엘리멘트 나누는 함수 필요
 
                     totalArray.add(new ItemObject(store, menuSplited));
+                    System.out.println(i);
                     System.out.println(totalArray.get(i).getTitle());
                     System.out.println(menu);
                     for(int j=0; j<=totalArray.get(i).getMenus().length -1; j++){
                         System.out.println(totalArray.get(i).getMenus()[j]);
                     }
                 }
-                //Log.d("debug :", "List " + mElementDataSize);
             } catch (IOException e) {
                 e.printStackTrace();
             }

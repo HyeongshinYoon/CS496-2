@@ -25,16 +25,17 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center_vertical"
+                android:background="@drawable/rounded"
                 android:layout_margin="10dp"
-                android:id="@+id/iv_store"
+                android:id="@+id/iv_menu"
                 android:src="@mipmap/ic_launcher"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
                 android:layout_gravity="center_vertical"
-                android:id="@+id/tv_store"
-                android:text="상호 이름"
+                android:id="@+id/tv_menu"
+                android:text="메뉴 이름"
                 android:textColor="#000000"/>
 
             <View
@@ -43,12 +44,12 @@
                 android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/tv_score"
+                android:id="@+id/tv_menu_score"
                 android:layout_margin="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="상호 평점"
+                android:text="메뉴 평점"
                 android:textSize="20dp"
                 android:textColor="#000000" />
         </LinearLayout>

@@ -40,6 +40,7 @@
         <activity android:name=".ui.main.fragment1.phonebook.MessageSend"></activity>
         <activity android:name=".ui.main.fragment1.phonebook.EditPhoneBook"></activity>
         <activity android:name="android.example.cs496.ui.main.Fragment2SubActivity"></activity>
+        <activity android:name=".ui.main.fragment4.RestaurantBookActivity"></activity>
 
         <activity android:name="android.example.cs496.ui.main.MainFragment3Activity"></activity>
         <activity android:name=".ui.main.fragment1.phonebook.GroupPhoneBook"></activity>
