@@ -4,13 +4,30 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <androidx.recyclerview.widget.RecyclerView android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        android:id="@+id/recycler_view44"
-        android:layout_marginTop="10dp"
-        >
-    </androidx.recyclerview.widget.RecyclerView>
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/restaurants_title"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimaryLight"
+            android:gravity="center_vertical"
+            android:paddingLeft="25dp"
+            android:textColor="#FFFFFF"
+            android:layout_gravity="center_horizontal"
+            android:text="교수회관(회원제 교직원)식당"
+            android:textSize="18dp"
+            android:textStyle="bold"/>
+        <androidx.recyclerview.widget.RecyclerView android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:id="@+id/recycler_view44"
+            android:layout_marginTop="10dp"
+            >
+        </androidx.recyclerview.widget.RecyclerView>
+    </LinearLayout>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,9 +37,7 @@
         android:layout_marginBottom="10dp"
         app:backgroundTint="@android:color/white"
         android:scaleType="centerCrop"
-        app:srcCompat="@drawable/ic_arrow_upward_black_8dp"
-
-        />
+        app:srcCompat="@drawable/ic_arrow_upward_black_8dp" />
 
 </RelativeLayout>
 
