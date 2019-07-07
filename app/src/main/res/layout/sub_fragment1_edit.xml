@@ -12,17 +12,41 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:background="@color/colorPrimaryLight"
-            android:gravity="center_vertical"
-            android:paddingLeft="25dp"
-            android:textColor="#FFFFFF"
-            android:layout_gravity="center_horizontal"
-            android:text="Edit Information"
-            android:textSize="18dp"
-            android:textStyle="bold"/>
+            android:orientation="horizontal">
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/back"
+                android:layout_marginLeft="15dp"
+                android:layout_gravity="center"
+                android:id="@+id/set_cancel"/>
+            <TextView
+                android:id="@+id/restaurants_title"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:paddingLeft="25dp"
+                android:textColor="#FFFFFF"
+                android:layout_gravity="center_horizontal"
+                android:text="Edit Rating"
+                android:textSize="18dp"
+                android:textStyle="bold"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/ic_save"
+                android:id="@+id/set_save"/>
+        </LinearLayout>
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -176,33 +200,6 @@
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/set_cancel"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:background="#ffffff"
-                android:text="Cancel"
-                android:textColor="@color/colorPrimaryLight"
-                android:textStyle="bold" />
-            <Button
-                android:id="@+id/set_save"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:background="#ffffff"
-                android:text="Save"
-                android:textColor="@color/colorPrimaryLight"
-                android:textStyle="bold" />
-        </LinearLayout>
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
