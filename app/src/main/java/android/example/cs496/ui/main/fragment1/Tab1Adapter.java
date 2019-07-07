@@ -46,7 +46,7 @@ public class Tab1Adapter extends RecyclerView.Adapter<Tab1Adapter.MyViewHolder> 
         datas.remove(position);
         String stringId = Integer.toString(deletedId);
         // datas에서 지우면 데이터베이스에서도 지우기, id를 받아와야
-        new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/" + stringId);
+        new DeleteDataTask().execute("http://143.248.36.220:3000/api/deletePhone/" + stringId);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, datas.size());
     }
@@ -203,7 +203,7 @@ public class Tab1Adapter extends RecyclerView.Adapter<Tab1Adapter.MyViewHolder> 
         String email = model.getEmail();
 
         String strId = Integer.toString(id);
-        new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone",strId, name, phone, "", group, email);
+        new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone",strId, name, phone, "", group, email);
 
         // notify item added by position
         notifyItemInserted(position);
@@ -247,21 +247,6 @@ public class Tab1Adapter extends RecyclerView.Adapter<Tab1Adapter.MyViewHolder> 
         }
         myViewHolder.imageView.setBackground(bgShape);
         myViewHolder.imageView.setClipToOutline(true);
-
-
-
-//        Bitmap profile = loadContactPhoto(context.getContentResolver(), data.getId(), data.getImg());
-//        if(profile != null) {
-//            if(Build.VERSION.SDK_INT >=21){
-//                myViewHolder.imageView.setBackground(new ShapeDrawable((new OvalShape())));
-//                myViewHolder.imageView.setClipToOutline(true);
-//            }
-//            myViewHolder.imageView.setImageBitmap(profile);
-//        } else {
-//            if(Build.VERSION.SDK_INT>=21){
-//                myViewHolder.imageView.setClipToOutline(false);
-//            }
-//        }
     }
 
     @Override

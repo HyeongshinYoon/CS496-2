@@ -6,4 +6,7 @@
     <string name="picture">Picture</string>
     <string name="description_info">Info</string>
     <string name="request_permission">This app needs camera permission.</string>
+    <string name="facebook_app_id">204065177187939</string>
+    <string name="fb_login_protocol_scheme">fb204065177187939</string>
+
 </resources>

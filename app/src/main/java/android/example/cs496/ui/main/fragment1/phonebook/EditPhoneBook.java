@@ -255,7 +255,6 @@ public class EditPhoneBook extends AppCompatActivity implements View.OnClickList
                     Toast.makeText(getApplicationContext(), "실패!", Toast.LENGTH_LONG).show(); // 저장 못하게 브레이크
                     break;
                 }
-
 //                Intent intent = new Intent(Intent.ACTION_EDIT);
 //                intent.setData(ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, mRecycelerItem.getPersonId()));
 //                intent.putExtra(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, textName.getText().toString());
@@ -271,9 +270,9 @@ public class EditPhoneBook extends AppCompatActivity implements View.OnClickList
                         textGroup.getText().toString(),
                         textEmail.getText().toString());
                 if(mState == 1){ // 추가할 경우
-                    int newId= insertData(newRecyclerItem);
+                    int newId = insertData(newRecyclerItem);
                     String strId = Integer.toString(newId);
-                    new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone",strId,textName.getText().toString(),textPhone.getText().toString(),textGroup.getText().toString(),"",textEmail.getText().toString());
+                    new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone",strId,textName.getText().toString(),textPhone.getText().toString(),textGroup.getText().toString(),"",textEmail.getText().toString());
                     // 인서트되고 나서 id 정해짐
                     Toast.makeText(getApplicationContext(), "추가 완료!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent();
@@ -282,7 +281,7 @@ public class EditPhoneBook extends AppCompatActivity implements View.OnClickList
                 if(mState == 2){ // 수정할 경우
                     editData(mRecycelerItem.getId(), newRecyclerItem);
                     String strId = Integer.toString(mRecycelerItem.getId());
-                    new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/"+strId,strId,textName.getText().toString(),textPhone.getText().toString(),textGroup.getText().toString(),"",textEmail.getText().toString());
+                    new PutDataTask().execute("http://143.248.36.220:3000/api/updatePhone/"+strId,strId,textName.getText().toString(),textPhone.getText().toString(),textGroup.getText().toString(),"",textEmail.getText().toString());
                     System.out.println(strId);
                     Toast.makeText(getApplicationContext(), "수정 완료!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent();
