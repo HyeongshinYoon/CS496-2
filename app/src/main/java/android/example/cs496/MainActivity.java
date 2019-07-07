@@ -8,6 +8,7 @@ import android.example.cs496.ui.main.SectionsPagerAdapter;
 import android.example.cs496.ui.main.TabFragment1;
 import android.example.cs496.ui.main.TabFragment2;
 import android.example.cs496.ui.main.TabFragment3;
+import android.example.cs496.ui.main.TabFragment4;
 import android.example.cs496.ui.main.fragment1.phonebook.GroupPhoneBook;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
     public void setupViewPager(ViewPager mViewPager) {
         sectionsPagerAdapter.addFragment(new TabFragment1(), "Phone");
         sectionsPagerAdapter.addFragment(new TabFragment2(), "Photos");
-        sectionsPagerAdapter.addFragment(new TabFragment3(), "Weather");
+        sectionsPagerAdapter.addFragment(new TabFragment4(), "Restaurants");
         mViewPager.setAdapter(sectionsPagerAdapter);
     }
 

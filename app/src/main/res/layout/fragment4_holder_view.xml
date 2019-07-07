@@ -27,7 +27,7 @@
                 android:layout_gravity="center_vertical"
                 android:background="@drawable/rounded"
                 android:layout_margin="10dp"
-                android:id="@+id/iv_pic"
+                android:id="@+id/iv_store"
                 android:src="@mipmap/ic_launcher"/>
             <TextView
                 android:layout_width="wrap_content"
