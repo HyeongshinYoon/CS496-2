@@ -15,27 +15,21 @@
         android:layout_gravity="center"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         app:cardCornerRadius="10dp"
-        android:layout_marginTop="7dp"
+        android:layout_margin="7dp"
         android:id="@+id/sub_card">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/rounded"
-                android:layout_margin="10dp"
-                android:id="@+id/iv_menu"
-                android:src="@mipmap/ic_launcher"/>
+            android:orientation="horizontal"
+            android:layout_margin="5dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
+                android:layout_marginLeft="10dp"
                 android:layout_gravity="center_vertical"
                 android:id="@+id/tv_menu"
-                android:text="메뉴 이름"
+                android:text="피자/만두/탕수육맛있다"
                 android:textColor="#000000"/>
 
             <View
@@ -45,11 +39,11 @@
 
             <TextView
                 android:id="@+id/tv_menu_score"
-                android:layout_margin="20dp"
+                android:layout_marginRight="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="메뉴 평점"
+                android:text="5.0"
                 android:textSize="20dp"
                 android:textColor="#000000" />
         </LinearLayout>
