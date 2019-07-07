@@ -8,18 +8,31 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <TextView
-            android:id="@+id/restaurants_title"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:background="@color/colorPrimaryLight"
-            android:gravity="center_vertical"
-            android:paddingLeft="25dp"
-            android:textColor="#FFFFFF"
-            android:layout_gravity="center_horizontal"
-            android:text="교수회관(회원제 교직원)식당"
-            android:textSize="18dp"
-            android:textStyle="bold"/>
+            android:orientation="horizontal">
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/back"
+                android:layout_marginLeft="15dp"
+                android:layout_gravity="center"
+                android:id="@+id/back"/>
+            <TextView
+                android:id="@+id/restaurants_title"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@color/colorPrimaryLight"
+                android:gravity="center_vertical"
+                android:paddingLeft="25dp"
+                android:textColor="#FFFFFF"
+                android:layout_gravity="center_horizontal"
+                android:text="교수회관(회원제 교직원)식당"
+                android:textSize="18dp"
+                android:textStyle="bold"/>
+        </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
