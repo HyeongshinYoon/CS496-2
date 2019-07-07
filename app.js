@@ -59,18 +59,18 @@ router.route("/users").get(userController.getUsers);
 router.route("/user/:id").get(userController.getUser);
 router.route("/addUser").post(userController.addUser);
 router.route("/updateUser").post(userController.updateUser);
-router.route("/deleteUserStar").post(userController.deleteUserStar);
-router.route("/updateUserStar").post(userController.updateUserStar);
-router.route("/addUserSter").post(userController.addUserSter);
+router.route("/deleteUserStar/:id").post(userController.deleteUserStar);
+router.route("/updateUserStar/:id").post(userController.updateUserStar);
+router.route("/addUserStar/:id").post(userController.addUserStar);
 router.route("/deleteUser/:id").get(userController.deleteUser);
 
 router.route("/stores").get(storeController.getStores);
 router.route("/store/:id").get(storeController.getStore);
 router.route("/addStore").post(storeController.addStore);
-router.route("/deleteStoreStar").post(storeController.deleteStoreStar);
-router.route("/updateStoreStar").post(storeController.updateStoreStar);
-router.route("/addStoreStar").post(storeController.addStoreStar);
 router.route("/updateStore").post(storeController.updateStore);
+router.route("/deleteStoreStar/:id").post(storeController.deleteStoreStar);
+router.route("/updateStoreStar/:id").post(storeController.updateStoreStar);
+router.route("/addStoreStar/:id").post(storeController.addStoreStar);
 router.route("/deleteStore/:id").get(storeController.deleteStore);
 
 app.listen(3000);

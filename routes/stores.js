@@ -13,7 +13,7 @@ exports.getStores = function(req, res){
 
 exports.getStore = function(req, res){
 
-  Store.find({id:req.params.id}, function(err, user){
+  Store.find({name:req.body.name}, function(err, user){
       if(err){
         res.send(err);
       }
@@ -38,7 +38,7 @@ exports.addStore = function(req, res){
 }
 
 exports.deleteStoreStar = function(req, res){
-  Store.update({id:req.parms.id}, function(err, user){
+  Store.update({id:req.params.id}, function(err, user){
     user.scoreArray.pull({menuNumber: req.body.id});
     user.save(function(err){
       if(err){
@@ -50,7 +50,7 @@ exports.deleteStoreStar = function(req, res){
 }
 
 exports.updateStoreStar = function(req, res){
-  Store.update({id:req.parms.id}, function(err, user){
+  Store.update({id:req.params.id}, function(err, user){
     user.scoreArray.pull({menuNumber: req.body.id});
     user.scoreArray.push({menuNumber: req.body.id, score: req.body.score});
     user.save(function(err){
@@ -63,7 +63,7 @@ exports.updateStoreStar = function(req, res){
 }
 
 exports.addStoreStar = function(req, res){
-  Store.update({id:req.parms.id}, function(err, user){
+  Store.update({id:req.params.id}, function(err, user){
     user.scoreArray.push({menuNumber: req.body.id, score: req.body.score});
     user.save(function(err){
       if(err){

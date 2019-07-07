@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 //검색, 그룹 버튼이 Tab1에만 보이도록
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
                 boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
-                
+
 
                 if(tab.getPosition()==0){
                     searchButton.setVisibility(View.VISIBLE);
