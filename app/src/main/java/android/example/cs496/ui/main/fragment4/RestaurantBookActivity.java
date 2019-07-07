@@ -36,12 +36,12 @@ public class RestaurantBookActivity extends AppCompatActivity {
         System.out.println(test);
 //
 //
-        store_name = item.getTitle();
-        menu_list = item.getMenus();
-        System.out.println(store_name);
-        System.out.println(menu_list[0]);
-        System.out.println(menu_list[1]);
-        System.out.println(menu_list[2]);
+//        store_name = item.getTitle();
+//        menu_list = item.getMenus();
+//        System.out.println(store_name);
+//        System.out.println(menu_list[0]);
+//        System.out.println(menu_list[1]);
+//        System.out.println(menu_list[2]);
 //
 //        menu_list = new String[2];
 //        menu_list[0]= "첫번째";
