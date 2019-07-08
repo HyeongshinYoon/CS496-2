@@ -21,5 +21,12 @@ public class ItemObject implements Serializable {
         return menus;
     }
 
+    public void setTitle(String title){
+        this.title = title;
+    }
+    public void setMenus(Map<String,ArrayList<Menu>> map){
+        this.menus = map;
+    }
+
 
 }

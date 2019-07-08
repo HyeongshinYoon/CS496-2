@@ -8,13 +8,13 @@ public class Menu implements Serializable {
     private String menuName;
     private int menuId;
     private int votedNumber;
-    private int totalNumber;
+    private int totalScore;
 
-    public Menu(String menuName, int menuId, int votedNumber, int totalNumber) {
+    public Menu(String menuName, int menuId, int votedNumber, int totalScore) {
         this.menuName =menuName;
         this.menuId = menuId;
         this.votedNumber = votedNumber; 
-        this.totalNumber = totalNumber;
+        this.totalScore = totalScore;
     }
 
     public int getMenuId() {
@@ -26,7 +26,7 @@ public class Menu implements Serializable {
     }
 
     public int getTotalNumber() {
-        return totalNumber;
+        return totalScore;
     }
 
     public  String getMenuName(){

@@ -42,6 +42,8 @@ public class Tab4Adapter extends RecyclerView.Adapter<Tab4Adapter.ViewHolder> {
     public void onBindViewHolder(@NonNull Tab4Adapter.ViewHolder holder, int position) {
 
         holder.textView_title.setText(String.valueOf(mList.get(position).getTitle()));
+        int ss = 10;
+        String score = Integer.toString(ss);
         holder.textView_score.setText("임의의 점수");
         //holder.imageView_img.set
 
