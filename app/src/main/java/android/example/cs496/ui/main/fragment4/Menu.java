@@ -10,14 +10,9 @@ public class Menu implements Serializable {
     private double votedNumber;
     private double totalScore;
 
-    public void Menu(){
-        this.menuName = "";
-        this.menuId = 0;
-        this.votedNumber = 0;
-        this.totalScore = 0;
-    }
 
     public Menu(String menuName, int menuId, double votedNumber, double totalScore) {
+
         this.menuName =menuName;
         this.menuId = menuId;
         this.votedNumber = votedNumber; 
