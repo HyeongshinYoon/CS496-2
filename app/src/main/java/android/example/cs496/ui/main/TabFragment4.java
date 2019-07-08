@@ -78,7 +78,10 @@ public class TabFragment4 extends Fragment {
                         Intent intent =new Intent(context, RestaurantBookActivity.class);
                         ItemObject item = totalArray.get(position); // 아이템 오브젝트 하나
                         intent.putExtra("store_select", item);
-                        startActivityForResult(intent,0);
+
+                        //intent.putExtra("store_state", "1");
+                        startActivityForResult(intent,0);//
+
                     }
                 }));
         return v;

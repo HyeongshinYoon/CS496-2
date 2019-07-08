@@ -31,7 +31,12 @@
                 android:layout_gravity="center_horizontal"
                 android:text="교수회관(회원제 교직원)식당"
                 android:textSize="18dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"/>]
+
+            <View
+                android:layout_width="70dp"
+                android:layout_height="0dp" />
+
         </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView android:layout_width="wrap_content"
             android:layout_height="wrap_content"

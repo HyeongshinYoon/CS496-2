@@ -16,6 +16,7 @@ import java.util.Map;
 
 public class RestaurantSubAdapter extends RecyclerView.Adapter<RestaurantSubAdapter.ViewHolder> {
     private ArrayList<Menu> mMenuArray; // 메뉴들의 이름이 들어가 있는 스트링 배열, 태그 없음,
+    private Menu mMenu;
 
     public RestaurantSubAdapter(ArrayList<Menu> menuArray){
         this.mMenuArray = menuArray;
@@ -31,12 +32,24 @@ public class RestaurantSubAdapter extends RecyclerView.Adapter<RestaurantSubAdap
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@OnBind");
-        Menu mMenu =mMenuArray.get(position);
+        mMenu =mMenuArray.get(position);
         String menuName = mMenu.getMenuName(); // position에 해당하는 태그 스트링 가져오기
-        double score =Math.round(((mMenu.getTotalNumber()/mMenu.getVotedNumber()*100))/100.0);
-        String scoreStr = Double.toString(score);
+        //double score =Math.round(((mMenu.getTotalNumber()/mMenu.getVotedNumber()*100))/100.0);
+        //String scoreStr = Double.toString(score);
+
+        //holder.tv_menu_score.setText(scoreStr);
+        System.out.println("menu: " +menuName);
+        System.out.println("total : " +mMenu.getTotalNumber());
+        System.out.println("voted : " +mMenu.getVotedNumber());
+        System.out.println("mean : " +mMenu.getMeanScore());
+
         holder.tv_menu.setText(menuName);
-        holder.tv_menu_score.setText(scoreStr);
+        if(mMenu.getVotedNumber()!=0){
+            holder.tv_menu_score.setText(Double.toString(mMenu.getMeanScore()));
+        }else{
+            holder.tv_menu_score.setText("아직 평가한 사람이 없습니다");
+        }
+
     }
 
     @Override

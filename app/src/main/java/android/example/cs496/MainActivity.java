@@ -85,11 +85,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static int last_menu_id = 1;
     Context context;
     private CallbackManager callbackManager;
-
     private ArrayList<String> storeArray = new ArrayList();
     private ArrayList<String> menuArray = new ArrayList();
     public static ArrayList<ItemObject> totalArray = new ArrayList();
     public static UserItem userInfo = new UserItem();
+
     public static int now_id = 0;
     public static int count = 0;
     private Map<String, String> storeKey = new HashMap<String, String>();
@@ -124,6 +124,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/:id"); 해당 id 삭제
         // 영연 143.248.36.218
         //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone", );
+
+
+        //addStore("학부 식당");
+
+
     }
 
 
@@ -209,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //selecting tabs
 
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+        this.isLoggedIn = accessToken != null && !accessToken.isExpired();//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         if(!isLoggedIn){
             facebook_login.setVisibility(View.VISIBLE);
             is_login.setVisibility(View.INVISIBLE);
@@ -224,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 viewPager.setCurrentItem(tab.getPosition());
                 //검색, 그룹 버튼이 Tab1에만 보이도록
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+                isLoggedIn = accessToken != null && !accessToken.isExpired();
 
                 if(tab.getPosition()==-1){
                     searchButton.setVisibility(View.VISIBLE);
@@ -881,18 +886,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             else {
                 if(nowTag == -1){
                     String key = list[i];// 맵에 더하기
+
                     now_menu = null;
 //                    android.example.cs496.ui.main.fragment4.Menu menu = new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1);
+
                     new_menus = new ArrayList<>();
                     getDish(list[i], store);
                     new_menus.add(now_menu);
                     map.add(new Menus(key, new_menus));
                 }
                 else {
+
                     now_menu = null;
                     getDish(list[i], store);
                     new_menus.add(now_menu);
 //                    new_menus.add(new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1));
+
                 }
             }
         }
