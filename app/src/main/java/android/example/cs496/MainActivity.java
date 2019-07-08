@@ -854,7 +854,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             int menu_id = jsonObject.get("menuId").getAsInt();
                             int total_score = jsonObject.get("totalScore").getAsInt();
                             int voted_number = jsonObject.get("votedNumber").getAsInt();
-                            now_menu = new android.example.cs496.ui.main.fragment4.Menu(menu_name, menu_id, total_score, voted_number);
+                            now_menu = new android.example.cs496.ui.main.fragment4.Menu(menu_name, menu_id, voted_number, total_score);
                         }
 
                     }

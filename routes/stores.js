@@ -73,7 +73,7 @@ exports.updateStoreStar = function(req, res){
 }
 
 exports.addStoreStar = function(req, res){
-   Store.findOne({ObjectId:req.params.id}, function(err, store){
+   Store.findOne({id:req.params.id}, function(err, store){
       if(err) return res.send(err);
       if(!store) return res.send(err);
       menu = new Menu();
