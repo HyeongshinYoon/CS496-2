@@ -10,11 +10,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAdapter.ViewHolder> {
-    private String [] mList; // 메뉴들의 이름이 들어가 있는 스트링 배열
+import java.util.ArrayList;
+import java.util.Map;
 
-    public RestaurantMenuAdapter(String[] list){
-        this.mList = list;
+public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAdapter.ViewHolder> {
+    private Map<String, ArrayList<Menu>> mMenus; // 메뉴들의 이름이 들어가 있는 스트링 배열
+
+    public RestaurantMenuAdapter(Map<String, ArrayList<Menu>> menus){
+        this.mMenus = menus;
     }
 //    @NonNull
 //    @Override
@@ -25,8 +28,8 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
     @NonNull
     @Override
     public RestaurantMenuAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Oncreate");
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sub_fragment4_item_holder_view, parent, false);
+        //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Oncreate");
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sub_fragment4_holder_view, parent, false);
         return new ViewHolder(view);
     }
 
@@ -34,26 +37,29 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@OnBind");
-        holder.textView_menu_name.setText(mList[position]);
-        holder.textView_menu_score.setText("임의의 메뉴 점수");
+        //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@OnBind");
+
+//        holder.textView_menu_name.setText(mList[position]);
+//        holder.textView_menu_score.setText("임의의 메뉴 점수");
 
     }
 
     @Override
     public int getItemCount() {
-        return this.mList.length;
+        return this.mMenus.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView imageView_img;
-        private TextView textView_menu_name, textView_menu_score;
+        private TextView textView_set_name;
+        private RecyclerView recyclerView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ViewHolder");
-            textView_menu_name = (TextView) itemView.findViewById(R.id.tv_menu);
-            textView_menu_score = (TextView) itemView.findViewById(R.id.tv_menu_score);
+            //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ViewHolder");
+            textView_set_name = (TextView) itemView.findViewById(R.id.set_menu_title);
+            recyclerView = (RecyclerView) itemView.findViewById((R.id.recycler_view));
+            //textView_menu_score = (TextView) itemView.findViewById(R.id.tv_menu_score);
 
         }
     }

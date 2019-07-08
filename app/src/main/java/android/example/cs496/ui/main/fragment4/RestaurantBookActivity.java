@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class RestaurantBookActivity extends AppCompatActivity {
 
@@ -35,10 +37,10 @@ public class RestaurantBookActivity extends AppCompatActivity {
         item = (ItemObject) intent.getSerializableExtra("store_select");
         test = intent.getStringExtra("store_state");
         System.out.println("test for intent of RestaurantBookActivity:" +test);
-
         TextView store_title = (TextView) findViewById(R.id.restaurants_title);
         store_title.setText(item.getTitle());//
-//
+        Map<String, ArrayList<Menu>> menus = item.getMenus();
+
 //        store_name = item.getTitle();
 //        menu_list = item.getMenus();
 //        System.out.println(store_name);
@@ -49,7 +51,7 @@ public class RestaurantBookActivity extends AppCompatActivity {
 //        menu_list[0]= "첫번째";
 //        menu_list[1]= "두번째";
 
-        adapter = new RestaurantMenuAdapter( menu_list); //어댑터 고쳐야 ?
+        adapter = new RestaurantMenuAdapter( menus); //어댑터 고쳐야 ? 어댑터에서 Map Menus 받아오게 해야
 //
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         //layoutManager.scrollToPositionWithOffset(0,0);
