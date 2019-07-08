@@ -856,9 +856,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 e1.printStackTrace();
                             }
                         } else {
-                            int menu_id = jsonObject.get("menuId").getAsInt();
-                            int total_score = jsonObject.get("totalScore").getAsInt();
-                            int voted_number = jsonObject.get("votedNumber").getAsInt();
+                            JsonArray ja = jsonObject.getAsJsonArray("scoreArray");
+                            JsonObject jo = (JsonObject) ja.get(0);
+                            int menu_id = jo.get("menuId").getAsInt();
+                            int total_score = jo.get("totalScore").getAsInt();
+                            int voted_number = jo.get("votedNumber").getAsInt();
                             now_menu = new android.example.cs496.ui.main.fragment4.Menu(menu_name, menu_id, voted_number, total_score);
                         }
 
