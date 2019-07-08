@@ -75,11 +75,12 @@
                     android:id="@+id/userName"/>
                 <Button
                     android:id="@+id/set_btn"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:layout_gravity="end|center"
                     android:layout_marginLeft="5dp"
-                    android:layout_marginRight="15dp"
+                    android:layout_marginRight="10dp"
+                    android:padding="5dp"
                     android:backgroundTint="#000"
                     android:background="@drawable/setting"
                     android:textSize="8dp"/>
