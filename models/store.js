@@ -1,16 +1,17 @@
 var mongoose = require('mongoose');
 
 var menuSchema = new mongoose.Schema({
+   _id: { type: String },
   menuId: Number,
   menuName: String,
   votedNumber: Number,
   totalScore: Number
-});
+},{ _id: false });
 
 // Define Schemas
 var storeSchema = new mongoose.Schema({
   id: {
-    type: Number
+    type: String
   },
   name: {
     type: String

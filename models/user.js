@@ -8,7 +8,7 @@ var scoreSchema = new mongoose.Schema({
 
 var userSchema = new mongoose.Schema({
   id: {
-    type:Number,
+    type:String,
   },
   name: {
     type:String,

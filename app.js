@@ -65,7 +65,7 @@ router.route("/addUserStar/:id").post(userController.addUserStar);
 router.route("/deleteUser/:id").get(userController.deleteUser);
 
 router.route("/stores").get(storeController.getStores);
-router.route("/store").post(storeController.getStore);
+router.route("/store/:id").get(storeController.getStore);
 router.route("/storeMenu/:id").post(storeController.getStoreMenu);
 router.route("/addStore").post(storeController.addStore);
 router.route("/updateStore/:id").post(storeController.updateStore);
