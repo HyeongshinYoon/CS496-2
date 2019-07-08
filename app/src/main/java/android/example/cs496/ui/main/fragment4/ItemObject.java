@@ -8,16 +8,10 @@ public class ItemObject implements Serializable {
     private String title;
     private int id;
     private ArrayList<Menus> menus;
-    private String meanScore;
 
-    public ItemObject(String title, ArrayList<Menus> menus){
+    public ItemObject(String title, ArrayList<Menus> arrayOfMenus){
         this.title = title; // 가게 이름
-        this.menus = menus;
-//        for (int i=0; i<=menus.size()-1; i++){
-//            Menus arrayOfMenus = this.menus.get(i);
-//            for(int j= 0)
-//        }
-        this.meanScore = "10";
+        this.menus = arrayOfMenus;
     }
 
     public String getTitle() {
@@ -37,8 +31,23 @@ public class ItemObject implements Serializable {
     public void setMenus(ArrayList<Menus> menus){
         this.menus = menus;
     }
-    public void setMeanScore(String meanScore){
-        this.meanScore =meanScore;
+
+    public double getMeanScore(){
+        int sumVote =0;
+        double sumTotal =0;
+        for (int i=0; i<=menus.size()-1; i++){
+            Menus menus1 = menus.get(i);
+            for(int j= 0; j<= menus1.getmMenu().size()-1; j++){
+                Menu menu = menus1.getmMenu().get(j);
+                double votedNumber =menu.getVotedNumber();
+                double totalNumber =menu.getTotalNumber();// total Score
+                if(votedNumber!=0){
+                    sumVote += votedNumber;
+                    sumTotal += totalNumber;
+                }
+            }
+        }
+        return sumTotal/sumVote;
     }
 
 
