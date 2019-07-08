@@ -35,7 +35,6 @@ public class dummyData {
             String phone, group, email;
             //한줄씩 object로 바꿔서 해당값 확인 후, datas에 add
             JSONObject jObject = personArray.getJSONObject(i);
-
             int id = jObject.getInt("id");
             String name = jObject.getString("name");
             phone = jObject.getString("phone");

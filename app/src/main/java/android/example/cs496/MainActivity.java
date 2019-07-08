@@ -10,6 +10,8 @@ import android.example.cs496.ui.main.TabFragment2;
 import android.example.cs496.ui.main.TabFragment3;
 import android.example.cs496.ui.main.TabFragment4;
 import android.example.cs496.ui.main.fragment1.phonebook.GroupPhoneBook;
+import android.example.cs496.ui.main.fragment4.ItemObject;
+import android.example.cs496.ui.main.fragment4.Tab4Adapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,6 +25,8 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.facebook.AccessToken;
@@ -40,12 +44,17 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.gson.JsonObject;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -58,7 +67,10 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import static android.example.cs496.ui.main.fragment1.dummyData.setInitialData;
 
@@ -71,8 +83,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
     public static ArrayList<Integer> imageList = new ArrayList<>();
     public static int lastImageNum = 1;
+    public static int last_store_id = 1;
     Context context;
     private CallbackManager callbackManager;
+
+    private ArrayList<String> storeArray = new ArrayList();
+    private ArrayList<String> menuArray = new ArrayList();
+    public static ArrayList<ItemObject> totalArray = new ArrayList();
+
 
     LoginButton facebook_login;
     LinearLayout is_login;
@@ -88,6 +106,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         checkPermissions();
         initView();
         facebook_login();
+        new Description().execute(); // 받아오고 연결하는 과정
+
 
         //new GetDataTask().execute("http://143.248.36.218:3000/api/phones"); 전체 불러옴
         //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
@@ -808,6 +828,149 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    public void GetStore(String store_name){
+        Future<JsonObject> json = Ion.with(context)
+                .load("http://143.248.36.220:3000/api/store")
+                .setBodyParameter("name", store_name)
+                .asJsonObject();
+
+        try {
+            JsonObject jo = json.get();
+            if(jo.get("name") == null){
+                addStore(store_name);
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addStore(String store_name) {
+        Ion.with(context)
+                .load("http://143.248.36.220:3000/api/addStore")
+                .setBodyParameter("id", String.valueOf(last_store_id))
+                .setBodyParameter("name", store_name)
+                .asJsonArray();
+    }
+
+    private class Description extends AsyncTask<Void, Void, Void> {
+
+        //진행바표시
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            //진행다일로그 시작
+//            progressDialog = new ProgressDialog(context); // 문제 생기면 바로 지우기
+//            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            progressDialog.setMessage("잠시 기다려 주세요.");
+//            progressDialog.show();
+
+        }
+        protected Void doInBackground(Void... params) {
+            try {
+                totalArray = new ArrayList<>();
+                Document doc = Jsoup.connect("https://bds.bablabs.com/restaurants?campus_id=JEnfpqCUuR").get();;
+                Elements elements =doc.select("h4.card-title");
+                Elements menus = doc.select("div.card-title");
+                int mSize = elements.size();
+                System.out.println("#of stores:"+elements.size());
+
+                for(Element element : elements) {
+                    String my_title = element.text();
+                    storeArray.add(my_title);
+                }
+                for(Element element : menus){
+                    String my_menu = element.text();
+                    menuArray.add(my_menu);
+                }
+                for(int i=0; i<=mSize-1; i++){
+                    String store = storeArray.get(i);
+                    String menu = menuArray.get(i);
+                    String[] menuRefined = refineString(menu);
+                    ItemObject itemObject = makeObject(store, menuRefined);
+                    totalArray.add(itemObject);
+
+                    System.out.println(itemObject.getTitle());
+                    Map<String,ArrayList<android.example.cs496.ui.main.fragment4.Menu>> hm =itemObject.getMenus();
+                    for(Map.Entry<String,ArrayList<android.example.cs496.ui.main.fragment4.Menu>> entry : hm.entrySet()){
+
+                        System.out.println("key : " + entry.getKey() + " , value : " + entry.getValue());
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            //ArraList를 인자로 해서 어답터와 연결한다.
+
+//            progressDialog.dismiss();
+        }
+    }
+    public String[] refineString(String string){
+        string = string.trim();
+        if(string.startsWith("식당에서")){
+            String[] list = new String[1];
+            list[0] ="식당에서 메뉴를 업로드하지 않았습니다.";
+            return  list;
+        }else{
+            string = string.replace("₩ ", "₩");
+            string = string.replace("-마로니애- ", "");
+            string = string.replace("메뉴 ", "메뉴");
+            string = string.replace("0 ","0");
+            string = string.replace("> ", ">");
+            string = string.replace("0원>","0원> ");
+            String[] list = string.split(" ");
+            return  list;
+        }
+    }
+
+    public ItemObject makeObject(String store, String[] list){
+        int nowTag = -1;
+
+        ArrayList<android.example.cs496.ui.main.fragment4.Menu> new_menus = new ArrayList<>();
+        ItemObject result;
+        Map<String, ArrayList<android.example.cs496.ui.main.fragment4.Menu>> map = new HashMap<String, ArrayList<android.example.cs496.ui.main.fragment4.Menu>>();
+        for(int i = 0; i<=list.length-1; i++){
+            if(list[i].startsWith("<")||list[i].startsWith("(한식")||list[i].startsWith("(죽식")){ // 태그 일 때, 다른 태그도 있을 수 있음, 북측의 일품메뉴는 별로 시작함
+                if(nowTag != -1){
+                    String key = list[nowTag];
+                    ArrayList<android.example.cs496.ui.main.fragment4.Menu> value = new_menus;
+                    map.put(key, value);
+                }
+                nowTag = i;
+                new_menus = new ArrayList<>();
+            }
+            else {
+                if(nowTag == -1){
+                    String key = list[i];// 맵에 더하기
+                    android.example.cs496.ui.main.fragment4.Menu menu = new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1);
+                    new_menus = new ArrayList<>();
+                    new_menus.add(menu);
+                    map.put(key, new_menus);
+                }
+                else {
+                    new_menus.add(new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1));
+                }
+            }
+        }
+        if(nowTag != -1){
+            String key = list[nowTag];
+            ArrayList<android.example.cs496.ui.main.fragment4.Menu> value = new_menus;
+            map.put(key, value);
+        }
+        result = new ItemObject(store, map);
+        return result;
+
+
+    }
 
 
 //    private void getHashKey() {
