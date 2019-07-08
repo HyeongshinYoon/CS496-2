@@ -79,7 +79,7 @@ public class TabFragment4 extends Fragment {
                         ItemObject item = totalArray.get(position); // 아이템 오브젝트 하나
                         intent.putExtra("store_select", item);
                         //intent.putExtra("store_state", "1");
-                        startActivityForResult(intent,0);
+                        startActivityForResult(intent,0);//
                     }
                 }));
         return v;

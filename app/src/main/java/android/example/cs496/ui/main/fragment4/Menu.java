@@ -8,7 +8,7 @@ public class Menu implements Serializable {
     private String menuName;
     private int menuId;
     private int votedNumber;
-    private int totalScore;
+    private double totalScore;
 
     public Menu(String menuName, int menuId, int votedNumber, int totalScore) {
         this.menuName =menuName;
@@ -25,7 +25,7 @@ public class Menu implements Serializable {
         return votedNumber;
     }
 
-    public int getTotalNumber() {
+    public double getTotalNumber() {
         return totalScore;
     }
 
@@ -33,4 +33,7 @@ public class Menu implements Serializable {
         return menuName;
     }
 
-}
+    public Double getMeanScore(){
+        double mean = totalScore/votedNumber;
+        return  mean;
+}   }

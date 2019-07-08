@@ -83,12 +83,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static int last_store_id = 1;
     Context context;
     private CallbackManager callbackManager;
-
     private ArrayList<String> storeArray = new ArrayList();
     private ArrayList<String> menuArray = new ArrayList();
     public static ArrayList<ItemObject> totalArray = new ArrayList();
     public static UserItem userInfo = new UserItem();
-
+    public static boolean isLoggedIn;
 
     LoginButton facebook_login;
     Button set_button;
@@ -117,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 영연 143.248.36.218
         //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone", );
 
-        addStore("학부 식당");
+        //addStore("학부 식당");
 
     }
 
@@ -197,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //selecting tabs
 
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+        this.isLoggedIn = accessToken != null && !accessToken.isExpired();//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         if(!isLoggedIn){
             facebook_login.setVisibility(View.VISIBLE);
             is_login.setVisibility(View.INVISIBLE);
@@ -212,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 viewPager.setCurrentItem(tab.getPosition());
                 //검색, 그룹 버튼이 Tab1에만 보이도록
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+                isLoggedIn = accessToken != null && !accessToken.isExpired();
 
                 if(tab.getPosition()==-1){
                     searchButton.setVisibility(View.VISIBLE);
@@ -1084,13 +1083,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             else {
                 if(nowTag == -1){
                     String key = list[i];// 맵에 더하기
-                    android.example.cs496.ui.main.fragment4.Menu menu = new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1);
+                    android.example.cs496.ui.main.fragment4.Menu menu = new android.example.cs496.ui.main.fragment4.Menu(list[i],0,12,0);
                     new_menus = new ArrayList<>();
                     new_menus.add(menu);
                     map.add(new Menus(key, new_menus));
                 }
                 else {
-                    new_menus.add(new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1));
+                    new_menus.add(new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,100));
                 }
             }
         }

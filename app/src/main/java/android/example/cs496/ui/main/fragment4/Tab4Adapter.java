@@ -45,16 +45,9 @@ public class Tab4Adapter extends RecyclerView.Adapter<Tab4Adapter.ViewHolder> {
         holder.textView_title.setText(String.valueOf(itemObject.getTitle()));
         //평균 점수 계산, 하나의 메뉴의 votedNUmber가 0인 메뉴는 빼고 (각 메뉴의 평균 점수의 합/ 메뉴 수의 합)
         //그냥 아이템오브젝트의 attr 하나로 추가하고, 나머지 attr들로 계산되게 하면 될듯
+        
+        holder.textView_score.setText(Double.toString(itemObject.getMeanScore()));
 
-        int ss = 10;
-        String score = Integer.toString(ss);
-        holder.textView_score.setText("임의의 점수");
-        //holder.imageView_img.set
-
-        //다 해줬는데도 GlideApp 에러가 나면 rebuild project를 해주자.
-//        GlideApp.with(holder.itemView).load(mList.get(position).getImg_url())
-//                .override(300,400)
-//                .into(holder.imageView_img);
     }
 
     @Override
