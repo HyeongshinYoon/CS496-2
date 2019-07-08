@@ -22,7 +22,7 @@ public class Tab4Adapter extends RecyclerView.Adapter<Tab4Adapter.ViewHolder> {
             super(itemView);
             imageView_img = (ImageView) itemView.findViewById(R.id.iv_store);
             textView_title = (TextView) itemView.findViewById(R.id.tv_store);
-            textView_score = (TextView) itemView.findViewById(R.id.tv_score);
+            textView_score = (TextView) itemView.findViewById(R.id.tv_score); // store의 평균 점수 = 메뉴들의 평균 점수
         }
     }
     //생성자
@@ -40,8 +40,12 @@ public class Tab4Adapter extends RecyclerView.Adapter<Tab4Adapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull Tab4Adapter.ViewHolder holder, int position) {
+        ItemObject itemObject = mList.get(position);
 
-        holder.textView_title.setText(String.valueOf(mList.get(position).getTitle()));
+        holder.textView_title.setText(String.valueOf(itemObject.getTitle()));
+        //평균 점수 계산, 하나의 메뉴의 votedNUmber가 0인 메뉴는 빼고 (각 메뉴의 평균 점수의 합/ 메뉴 수의 합)
+        //그냥 아이템오브젝트의 attr 하나로 추가하고, 나머지 attr들로 계산되게 하면 될듯
+
         int ss = 10;
         String score = Integer.toString(ss);
         holder.textView_score.setText("임의의 점수");
