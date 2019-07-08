@@ -10,7 +10,7 @@ public class Menu implements Serializable {
     private int votedNumber;
     private double totalScore;
 
-    public Menu(String menuName, int menuId, int votedNumber, int totalScore) {
+    public Menu(String menuName, int menuId, int votedNumber, double totalScore) {
         this.menuName =menuName;
         this.menuId = menuId;
         this.votedNumber = votedNumber; 

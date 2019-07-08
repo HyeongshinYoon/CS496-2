@@ -15,6 +15,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -41,7 +42,7 @@ import static android.example.cs496.ui.main.fragment1.dummyData.insertData;
 
 public class EditPhoneBook extends AppCompatActivity implements View.OnClickListener {
 
-    private Button mSave, mCancel;
+    private ImageButton mSave, mCancel;
     private EditText textName, textPhone, textGroup, textEmail;
     private RecyclerItem mRecycelerItem;
     private int mState;
@@ -76,7 +77,7 @@ public class EditPhoneBook extends AppCompatActivity implements View.OnClickList
         textEmail = findViewById(R.id.tv_sub_edit_email);
         textEmail.setText(mRecycelerItem.getEmail());
 
-        mSave = findViewById(R.id.set_save);
+        mSave =  findViewById(R.id.set_save);
         mSave.setOnClickListener(this);
         mCancel = findViewById(R.id.set_cancel);
         mCancel.setOnClickListener(this);
