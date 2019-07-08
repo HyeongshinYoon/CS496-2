@@ -10,6 +10,7 @@ import android.example.cs496.ui.main.TabFragment2;
 import android.example.cs496.ui.main.TabFragment4;
 import android.example.cs496.ui.main.fragment1.phonebook.GroupPhoneBook;
 import android.example.cs496.ui.main.fragment4.ItemObject;
+import android.example.cs496.ui.main.fragment4.UserItem;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -37,7 +39,9 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.material.tabs.TabLayout;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.koushikdutta.async.future.FutureCallback;
@@ -81,9 +85,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<String> storeArray = new ArrayList();
     private ArrayList<String> menuArray = new ArrayList();
     public static ArrayList<ItemObject> totalArray = new ArrayList();
+    public static UserItem userInfo = new UserItem();
 
 
     LoginButton facebook_login;
+    Button set_button;
     LinearLayout is_login;
 
     @Override
@@ -171,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         groupButton =  findViewById(R.id.group_button);
         facebook_login = findViewById(R.id.login_button);
         is_login = findViewById(R.id.is_login);
+        set_button = findViewById(R.id.set_btn);
 
         new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
         new GetImageTask().execute("http://143.248.36.220:3000/api/photos");
@@ -225,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        is_login.setOnClickListener(new View.OnClickListener() {
+        set_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 PopupMenu p = new PopupMenu(
@@ -242,11 +249,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                                 facebook_login.setVisibility(View.VISIBLE);
                                 is_login.setVisibility(View.INVISIBLE);
+                                userInfo = new UserItem();
 
                                 Toast.makeText(MainActivity.this, "LOGOUT", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.leave_account:
-                                Toast.makeText(MainActivity.this, "SEARCH", Toast.LENGTH_SHORT).show();
+
+                                Ion.with(context)
+                                        .load("http://143.248.36.220:3000/api/deleteUser/" + userInfo.getUserId())
+                                        .asJsonObject()
+                                        .setCallback(new FutureCallback<JsonObject>() {
+                                            @Override
+                                            public void onCompleted(Exception e, JsonObject result) {
+                                                // do stuff with the result or error
+                                                Toast.makeText(context, "good!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
+                                LoginManager.getInstance().logOut();
+                                facebook_login.setVisibility(View.VISIBLE);
+                                is_login.setVisibility(View.INVISIBLE);
+
+                                userInfo = new UserItem();
+                                Toast.makeText(MainActivity.this, "leave_account", Toast.LENGTH_SHORT).show();
                                 break;
                         }
 
@@ -776,6 +801,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         parameters.putString("fields", "id,name");
                         request.setParameters(parameters);
                         request.executeAsync();
+
+                        facebook_login.setVisibility(View.INVISIBLE);
+                        is_login.setVisibility(View.VISIBLE);
                     }
 
                     @Override
@@ -790,25 +818,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
     private void userLoginSuccess(final String id, final String name){
+
+        userInfo = new UserItem(name, id);
         Ion.with(context)
-                .load("http://143.248.36.220:3000/api/user/id")
-                .asJsonObject()
-                .setCallback(new FutureCallback<JsonObject>() {
+                .load("http://143.248.36.220:3000/api/user/"+id)
+                .asString()
+                .setCallback(new FutureCallback<String>() {
                     @Override
-                    public void onCompleted(Exception e, JsonObject result) {
-                        if(result == null){
+                    public void onCompleted(Exception e, String result) {
+                        System.out.println(result+" result");
+
+                        JsonArray jsonArray = new JsonParser().parse(result).getAsJsonArray();
+                        JsonObject jsonObject = (JsonObject) jsonArray.get(0);
+                        if(jsonObject.get("java") != null){
                             JsonObject json = new JsonObject();
                             json.addProperty("id", id);
                             json.addProperty("name", name);
 
                             Ion.with(context)
-                                    .load("http://example.com/post")
+                                    .load("http://143.248.36.220:3000/api/addUser")
                                     .setJsonObjectBody(json)
                                     .asJsonObject()
                                     .setCallback(new FutureCallback<JsonObject>() {
                                         @Override
                                         public void onCompleted(Exception e, JsonObject result) {
                                             // do stuff with the result or error
+                                            Toast.makeText(context, "good!", Toast.LENGTH_SHORT).show();
                                         }
                                     });
                         }
