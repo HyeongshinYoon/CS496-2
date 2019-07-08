@@ -33,13 +33,13 @@ public class RestaurantEditAdapter extends RecyclerView.Adapter<RestaurantEditAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@OnBind");
-        mMenu =mMenus.getmMenu().get(position);
+        mMenu = mMenus.getmMenu().get(position);
         String menuName = mMenu.getMenuName();
         holder.tv_menu.setText(menuName);
         holder.ratingBar1.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-                //float v가 레이팅 점수
+                mMenu.setTotalScore(v);
             }
         });
     }

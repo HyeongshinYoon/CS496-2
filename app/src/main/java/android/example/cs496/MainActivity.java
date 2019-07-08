@@ -96,8 +96,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     android.example.cs496.ui.main.fragment4.Menu now_menu = null;
-
-
     LoginButton facebook_login;
     Button set_button;
     LinearLayout is_login;
@@ -117,17 +115,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         facebook_login();
         new Description().execute(); // 받아오고 연결하는 과정
 
-
         //new GetDataTask().execute("http://143.248.36.218:3000/api/phones"); 전체 불러옴
         //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
         //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/:id"); 주소록 바뀐 사람 추가하기, id 기준
         //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/:id"); 해당 id 삭제
         // 영연 143.248.36.218
         //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone", );
-
-
         //addStore("학부 식당");
-
 
     }
 
@@ -214,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //selecting tabs
 
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        this.isLoggedIn = accessToken != null && !accessToken.isExpired();//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         if(!isLoggedIn){
             facebook_login.setVisibility(View.VISIBLE);
             is_login.setVisibility(View.INVISIBLE);
@@ -229,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 viewPager.setCurrentItem(tab.getPosition());
                 //검색, 그룹 버튼이 Tab1에만 보이도록
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                isLoggedIn = accessToken != null && !accessToken.isExpired();
+                boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
 
                 if(tab.getPosition()==-1){
                     searchButton.setVisibility(View.VISIBLE);

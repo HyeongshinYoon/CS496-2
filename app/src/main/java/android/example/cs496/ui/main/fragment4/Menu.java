@@ -7,7 +7,7 @@ import java.util.Map;
 public class Menu implements Serializable {
     private String menuName;
     private int menuId;
-    private int votedNumber;
+    private double votedNumber;
     private double totalScore;
 
     public void Menu(){
@@ -17,7 +17,7 @@ public class Menu implements Serializable {
         this.totalScore = 0;
     }
 
-    public Menu(String menuName, int menuId, int votedNumber, int totalScore) {
+    public Menu(String menuName, int menuId, double votedNumber, double totalScore) {
         this.menuName =menuName;
         this.menuId = menuId;
         this.votedNumber = votedNumber; 
@@ -27,7 +27,7 @@ public class Menu implements Serializable {
     public int getMenuId() {
         return menuId;
     }
-    public int getVotedNumber() {
+    public double getVotedNumber() {
         return votedNumber;
     }
 
@@ -44,7 +44,7 @@ public class Menu implements Serializable {
     public void setMenuId(int menuId) {
         this.menuId = menuId;
     }
-    public void setVotedNumber(int votedNumber) {
+    public void setVotedNumber(double votedNumber) {
         this.votedNumber = votedNumber;
     }
     public void setTotalScore(double totalScore) {

@@ -39,8 +39,8 @@ public class ItemObject implements Serializable {
             Menus menus1 = menus.get(i);
             for(int j= 0; j<= menus1.getmMenu().size()-1; j++){
                 Menu menu = menus1.getmMenu().get(j);
-                double votedNumber =menu.getVotedNumber();
-                double totalNumber =menu.getTotalNumber();// total Score
+                double votedNumber = menu.getVotedNumber();
+                double totalNumber = menu.getTotalNumber();// total Score
                 if(votedNumber!=0){
                     sumVote += votedNumber;
                     sumTotal += totalNumber;

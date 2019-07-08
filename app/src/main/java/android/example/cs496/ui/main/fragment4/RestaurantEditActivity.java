@@ -62,7 +62,7 @@ public class RestaurantEditActivity extends AppCompatActivity implements View.On
     @Override
     public void onClick(View v){
         switch(v.getId()){
-//            case R.id.set_save: //저장 버튼 누를 경우
+            case R.id.set_save: //저장 버튼 누를 경우
 //                if(textName.getText().toString().isEmpty() || textPhone.getText().toString().isEmpty()){ // 이름 또는 번호가 공란일 경우
 //                    Toast.makeText(getApplicationContext(), "실패!", Toast.LENGTH_LONG).show(); // 저장 못하게 브레이크
 //                    break;

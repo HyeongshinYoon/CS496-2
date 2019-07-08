@@ -47,7 +47,7 @@ public class RestaurantSubAdapter extends RecyclerView.Adapter<RestaurantSubAdap
         if(mMenu.getVotedNumber()!=0){
             holder.tv_menu_score.setText(Double.toString(mMenu.getMeanScore()));
         }else{
-            holder.tv_menu_score.setText("아직 평가한 사람이 없습니다");
+            holder.tv_menu_score.setText("미평가");
         }
 
     }
