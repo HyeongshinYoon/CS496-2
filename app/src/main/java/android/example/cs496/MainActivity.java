@@ -42,6 +42,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.gun0912.tedpermission.PermissionListener;
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static ArrayList<Integer> imageList = new ArrayList<>();
     public static int lastImageNum = 1;
     public static int last_store_id = 1;
+    public static int last_menu_id = 1;
     Context context;
     private CallbackManager callbackManager;
 
@@ -88,6 +90,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<String> menuArray = new ArrayList();
     public static ArrayList<ItemObject> totalArray = new ArrayList();
     public static UserItem userInfo = new UserItem();
+    public static int now_id = 0;
+    public static int count = 0;
+    private Map<String, String> storeKey = new HashMap<String, String>();
+
+
+    android.example.cs496.ui.main.fragment4.Menu now_menu = null;
 
 
     LoginButton facebook_login;
@@ -116,9 +124,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/:id"); 해당 id 삭제
         // 영연 143.248.36.218
         //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone", );
-
-        addStore("학부 식당");
-
     }
 
 
@@ -129,8 +134,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.search_button:
                 //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/2");
                 Toast.makeText(MainActivity.this, "search", Toast.LENGTH_SHORT).show();
-                //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/5","5","업데이트완료","010-0000-4141","업데이트그룹","이미지","업데이트이메일");
-                //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/112","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일"); 해당 id 삭제
                 //아이디도 스트링으로 받아서, 그 안에서 다시 정수로 변환해줘야
                 //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일");
                 //Intent intent = new Intent(MainActivity.this, SearchPhoneBook.class);
@@ -177,6 +180,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void initView(){
+
+        storeKey.put("동측 석박사 식당", "1");
+        storeKey.put("서측 학생 식당", "2");
+        storeKey.put("학부 식당", "3");
+        storeKey.put("교수회관(회원제 교직원)식당", "4");
+        storeKey.put("동측 교직원 식당", "5");
+        storeKey.put("문지 캠퍼스 구내 식당", "6");
+        storeKey.put("화암 기숙사 식당", "7");
+
         //Initializing the TabLayout;
         tabs = findViewById(R.id.tabs);
         searchButton = findViewById(R.id.search_button);
@@ -369,307 +381,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-//    class PostDataTask extends AsyncTask<String, Void, String> {
-//
-//        ProgressDialog progressDialog;
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//            progressDialog = new ProgressDialog(MainActivity.this);
-//            progressDialog.setMessage("Inserting data...");
-//            progressDialog.show();
-//        }
-//
-//        @Override
-//        protected String doInBackground(String... params){
-//
-//            try {
-//                return postData(params[0]);
-//            } catch (IOException ex){
-//                return "Network error !";
-//            } catch (JSONException ex){
-//                return "Data Invalid !";
-//            }
-//        }
-//        @Override
-//        protected void onPostExecute(String result) {
-//            super.onPostExecute(result);
-//
-//            if(progressDialog != null) {
-//                progressDialog.dismiss();
-//            }
-//        }
-//
-//        private String postData(String urlPath) throws IOException, JSONException {
-//
-//            StringBuilder result = new StringBuilder();
-//            BufferedWriter bufferedWriter = null;
-//            BufferedReader bufferedReader = null;
-//
-//            try {
-//                JSONObject dataToSend = new JSONObject();
-//                dataToSend.put("id", 1);
-//                dataToSend.put("name", "Kelly");
-//                dataToSend.put("phone", "010-1234-5678");
-//                dataToSend.put("group", "KAIST");
-//                dataToSend.put("img", "");
-//                dataToSend.put("email", "abc@kaist.ac.kr");
-//
-//                System.out.println("send"+dataToSend);
-//                URL url = new URL(urlPath);
-//                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-//                urlConnection.setReadTimeout(10000 /* milliseconds */);
-//                urlConnection.setConnectTimeout(10000 /* millisecods */);
-//                urlConnection.setRequestMethod("POST");
-//                urlConnection.setDoOutput(true); //enable output (body data)
-//                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
-//                urlConnection.connect();
-//
-//                OutputStream outputStream = urlConnection.getOutputStream();
-//                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-//                bufferedWriter.write(dataToSend.toString());
-//                bufferedWriter.flush();
-//
-//                InputStream inputStream = urlConnection.getInputStream();
-//                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-//                String line;
-//                while ((line = bufferedReader.readLine()) != null) {
-//                    result.append(line).append("\n");
-//                }
-//            } finally {
-//                if( bufferedReader != null) {
-//                    bufferedReader.close();
-//                }
-//                if(bufferedWriter != null){
-//                    bufferedWriter.close();
-//                }
-//            }
-//            return result.toString();
-//        }
-//    }
-
-    //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
-//    class PostDataTask extends AsyncTask<String, Void, String> {
-//
-//        ProgressDialog progressDialog;
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//            progressDialog = new ProgressDialog(MainActivity.this);
-//            progressDialog.setMessage("Inserting data...");
-//            progressDialog.show();
-//        }
-//
-//        @Override
-//        protected String doInBackground(String... params){
-//
-//            try {
-//                return postData(params[0], params[1], params[2], params[3], params[4], params[5],params[6]);
-//            } catch (IOException ex){
-//                return "Network error !";
-//            } catch (JSONException ex){
-//                return "Data Invalid !";
-//            }
-//        }
-//        @Override
-//        protected void onPostExecute(String result) {
-//            super.onPostExecute(result);
-//
-//            if(progressDialog != null) {
-//                progressDialog.dismiss();
-//            }
-//        }
-//
-//        private String postData(String urlPath, String strId, String name, String phone, String group, String img, String email) throws IOException, JSONException {
-//
-//            StringBuilder result = new StringBuilder();
-//            BufferedWriter bufferedWriter = null;
-//            BufferedReader bufferedReader = null;
-//
-//            int id = Integer.parseInt(strId);
-//
-//            try {
-//                JSONObject dataToSend = new JSONObject();
-//                dataToSend.put("id", id);
-//                dataToSend.put("name", name);
-//                dataToSend.put("phone", phone);
-//                dataToSend.put("group", group);
-//                dataToSend.put("img", "");
-//                dataToSend.put("email", email);
-//
-//                System.out.println("send"+dataToSend);
-//                URL url = new URL(urlPath);
-//                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-//                urlConnection.setReadTimeout(10000 /* milliseconds */);
-//                urlConnection.setConnectTimeout(10000 /* millisecods */);
-//                urlConnection.setRequestMethod("POST");
-//                urlConnection.setDoOutput(true); //enable output (body data)
-//                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
-//                urlConnection.connect();
-//
-//                OutputStream outputStream = urlConnection.getOutputStream();
-//                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-//                bufferedWriter.write(dataToSend.toString());
-//                bufferedWriter.flush();
-//
-//                InputStream inputStream = urlConnection.getInputStream();
-//                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-//                String line;
-//                while ((line = bufferedReader.readLine()) != null) {
-//                    result.append(line).append("\n");
-//                }
-//            } finally {
-//                if( bufferedReader != null) {
-//                    bufferedReader.close();
-//                }
-//                if(bufferedWriter != null){
-//                    bufferedWriter.close();
-//                }
-//            }
-//            return result.toString();
-//        }
-//    }
-
-
-    //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/:id"); 주소록 바뀐 사람 추가하기, id 기준
-//    class PutDataTask extends AsyncTask<String, Void, String> {
-//
-//        ProgressDialog progressDialog;
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//
-////            progressDialog = new ProgressDialog(MainActivity.this);
-////            progressDialog.setMessage("Updating data...");
-////            progressDialog.show();
-//        }
-//
-//        @Override
-//        protected String doInBackground(String... params) {
-//            try {
-//                return putData(params[0], params[1], params[2], params[3], params[4], params[5],params[6]);
-//            } catch (IOException ex) {
-//                return "Network Error !";
-//            } catch (JSONException ex) {
-//                return "Data invalid !";
-//            }
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String result) {
-//            super.onPostExecute(result);
-//
-//            System.out.println("update"+result);
-//
-//            if(progressDialog != null){
-//                progressDialog.dismiss();
-//            }
-//        }
-//
-//        private String putData(String urlPath, String strId, String name, String phone, String group, String img, String email) throws IOException, JSONException {
-//
-//            BufferedWriter bufferedWriter = null;
-//            String result = null;
-//
-//            int id = Integer.parseInt(strId);
-//
-//            try {
-//                JSONObject dataToSend = new JSONObject();
-//                dataToSend.put("id", id);
-//                dataToSend.put("name", name);
-//                dataToSend.put("phone", phone);
-//                dataToSend.put("group", group);
-//                dataToSend.put("img", "");
-//                dataToSend.put("email", email);
-//
-//                URL url = new URL(urlPath);
-//                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-//                urlConnection.setReadTimeout(10000 /* milliseconds */);
-//                urlConnection.setConnectTimeout(10000 /* millisecods */);
-//                urlConnection.setRequestMethod("POST");
-//                urlConnection.setDoOutput(true); //enable output (body data)
-//                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
-//                urlConnection.connect();
-//                // write data into server
-//                OutputStream outputStream = urlConnection.getOutputStream();
-//                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-//                bufferedWriter.write(dataToSend.toString());
-//                bufferedWriter.flush();
-//
-//                System.out.println("ResponseCode: "+urlConnection.getResponseCode());
-//
-//                if (urlConnection.getResponseCode() == 200) {
-//                    return "Update successfully !";
-//                } else {
-//                    return "Update failed !";
-//                }
-//            } finally {
-//                if(bufferedWriter != null) {
-//                    bufferedWriter.close();
-//                }
-//            }
-//        }
-//    }
-//
-//    class DeleteDataTask extends AsyncTask<String, Void, String> {
-//
-//        ProgressDialog progressDialog;
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//
-//            progressDialog = new ProgressDialog(MainActivity.this);
-//            progressDialog.setMessage("Deleting data...");
-//            progressDialog.show();
-//        }
-//
-//        @Override
-//        protected String doInBackground(String... params) {
-//            try {
-//                return deleteData(params[0]);
-//            } catch (IOException ex) {
-//                return "Network error !";
-//            }
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String result) {
-//            super.onPostExecute(result);
-//
-//            System.out.println("delete"+result);
-//            if(progressDialog != null){
-//                progressDialog.dismiss();
-//            }
-//        }
-//
-//        private String deleteData(String urlPath) throws IOException {
-//
-//            String result = null;
-//
-//            URL url = new URL(urlPath+"/1");
-//            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-//            urlConnection.setReadTimeout(10000 /* milliseconds */);
-//            urlConnection.setConnectTimeout(10000 /* millisecods */);
-//            urlConnection.setRequestMethod("GET");
-//            urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
-//            urlConnection.connect();
-//
-//            System.out.println("delete: "+urlConnection.getResponseCode());
-//
-//            if (urlConnection.getResponseCode() == 200) {
-//                result = "Delete Successfully !";
-//            } else {
-//                result = "Delete failed !";
-//            }
-//
-//            return result;
-//        }
-//    }
-
     class GetImageTask extends AsyncTask<String, Void, String> {
 
         ProgressDialog progressDialog;
@@ -828,7 +539,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         userInfo = new UserItem(name, id);
         Ion.with(context)
                 .load("http://143.248.36.220:3000/api/user/"+id)
-
                 .asString()
                 .setCallback(new FutureCallback<String>() {
 
@@ -841,7 +551,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         JsonArray jsonArray = new JsonParser().parse(result).getAsJsonArray();
                         JsonObject jsonObject = (JsonObject) jsonArray.get(0);
-                        if(jsonObject.get("java") != null){
+                        if(jsonObject.get("id") == null){
                             JsonObject json = new JsonObject();
                             json.addProperty("id", id);
                             json.addProperty("name", name);
@@ -902,6 +612,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 for (int i = 0; i < ja.length(); i++) {
                     JSONObject j = ja.getJSONObject(i);
                     if(j.getInt("id") >= last_store_id) last_store_id = j.getInt("id") + 1;
+                    if(j.getJSONArray("scoreArray").length() != 0){
+                        JSONArray jja = j.getJSONArray("scoreArray");
+                        for(int k = 0; k <jja.length() ; k++){
+                            JSONObject jo = jja.getJSONObject(k);
+                            if(jo.getInt("menuId") >= last_menu_id) last_menu_id = jo.getInt("menuId") + 1;
+                        }
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -943,17 +660,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private int addStore(String store_name) {
+    private void addStore(String store_name) {
         Ion.with(context)
                 .load("http://143.248.36.220:3000/api/addStore")
-                .setBodyParameter("id", String.valueOf(last_store_id))
+                .setBodyParameter("id", storeKey.get(store_name))
                 .setBodyParameter("name", store_name)
                 .asJsonArray();
 
-        last_store_id += 1;
-        return last_store_id - 1;
     }
 
+    private void GetStore(final String store_name) {
+        String store_id = storeKey.get(store_name);
+        Ion.with(context)
+                .load("http://143.248.36.220:3000/api/store/" + store_id)
+                .asString()
+                .setCallback(new FutureCallback<String>() {
+                    @Override
+                    public void onCompleted(Exception e, String result) {
+                        System.out.println(result+" result");
+                        JsonArray jsonArray = new JsonParser().parse(result).getAsJsonArray();
+                        JsonObject jsonObject = (JsonObject) jsonArray.get(0);
+                        if(jsonObject.size() == 0){
+                            addStore(store_name);
+                        }
+                    }
+                });
+    }
 
 
     private class Description extends AsyncTask<Void, Void, Void> {
@@ -993,7 +725,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     String store = storeArray.get(i);
                     String menu = menuArray.get(i);
                     String[] menuRefined = refineString(menu);
-                    ItemObject itemObject = makeObject(store, menuRefined);
+
+                    String store_id = storeKey.get(store);
+                    if(store_id == null)continue;
+                    GetStore(store);
+                    ItemObject itemObject = makeObject(store, store_id, menuRefined);
+                    itemObject.setId(Integer.parseInt(store_id));
                     totalArray.add(itemObject);
                     System.out.println(itemObject.getTitle());
                 }
@@ -1019,13 +756,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        for(int i=0; i<= totalArray.size()-1; i++){
 //            ItemObject itemObject = totalArray.get(i);
 //            String storeName = itemObject.getTitle();
-//            if(디비 안에 storeName 을 name으로 갖는 store가 없다면){
-////                //디비 안에 새로운 Store 객체 추가, 새로운 아이디, 비어 있는 scoreArray를 갖는다.
-////                // 그리고 item.setId(storeId)
-//                //storeId =totalArray.get(i).getId;
-//            }else{
-//                //
-//            }
+//            GetStore(storeName);
+//            itemObject.setId(now_id);
 //            ArrayList<Menus> menusArrayList = totalArray.get(i).getMenus();
 //            for(int j=0; j<= menusArrayList.size()-1;j++ ){
 //                Menus menus = menusArrayList.get(j);
@@ -1033,18 +765,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                for(int k=0; k<=menuArrayOfMenus.size()-1;k++){
 //                    android.example.cs496.ui.main.fragment4.Menu menu =menuArrayOfMenus.get(k);
 //                    String menuName = menu.getMenuName();
-//                    if(storeId를 갖는 store의 scoreArray에 menuName을 갖는 엘레멘트가 없다면 ){
-//                        //중복되지 않는 아이디인 menuId를 생성, votedNumber=0,totalNumber=0으로 갖는 엘레멘트 추가
-//                        //menu.setId, menu.setVotednumber, menuSetTotalNumber
-//                    }else{
-//                         //menu.setId, menu.setVotednumber, menuSetTotalNumber
-//                    }
-//
+//                    getDish(menuName, now_id);
+//                    menu = now_menu;
 //                }
 //            }
 //        }
-
+//
 //    }
+
     public String[] refineString(String string){
         string = string.trim();
         if(string.startsWith("식당에서")){
@@ -1063,9 +791,78 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private int addMenu(String menu_name, String store_id) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("menuName", menu_name);
+        json.put("menuId", String.valueOf(last_menu_id));
+        json.put("votedNumber", 0);
+        json.put("totalScore", 0);
 
+        System.out.println(json + " " + store_id);
 
-    public ItemObject makeObject(String store, String[] list){
+        Ion.with(context)
+                .load("http://143.248.36.220:3000/api/addStoreStar/" + store_id)
+                .setBodyParameter("menuName", menu_name)
+                .setBodyParameter("menuId", String.valueOf(last_menu_id))
+                .setBodyParameter("votedNumber", "0")
+                .setBodyParameter("totalScore", "0")
+                .asString()
+                .setCallback(new FutureCallback<String>() {
+                    @Override
+                    public void onCompleted(Exception e, String result) {
+                        // do stuff with the result or error
+                        System.out.println("result: "+result.toString());
+                        Toast.makeText(context, result.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+        last_menu_id += 1;
+        return last_menu_id - 1;
+    }
+
+    public void getDish(final String menu_name, final String store){
+
+        final String id = storeKey.get(store);
+        JsonObject json = new JsonObject();
+        json.addProperty("name", store);
+        json.addProperty("menuName", menu_name);
+        System.out.println(json);
+        Ion.with(context)
+                .load("http://143.248.36.220:3000/api/storeMenu/"+id)
+                .setJsonObjectBody(json)
+                .asString()
+                .setCallback(new FutureCallback<String>() {
+                    @Override
+                    public void onCompleted(Exception e, String result) {
+
+                        System.out.println(result);
+
+                        JsonArray jsonArray = new JsonParser().parse(result).getAsJsonArray();
+//                    System.out.println(jsonArray);
+//                    if(jsonArray.size() == 0){
+//                        now_menu = new android.example.cs496.ui.main.fragment4.Menu(menu_name, addMenu(menu_name, store_id), 0, 0);
+//                    }
+//                    else {
+
+                        JsonObject jsonObject = (JsonObject) jsonArray.get(0);
+                        if (jsonObject.getAsJsonArray("scoreArray").size() == 0) {
+                            try {
+                                now_menu = new android.example.cs496.ui.main.fragment4.Menu(menu_name, addMenu(menu_name, id), 0, 0);
+                            } catch (JSONException e1) {
+                                e1.printStackTrace();
+                            }
+                        } else {
+                            int menu_id = jsonObject.get("menuId").getAsInt();
+                            int total_score = jsonObject.get("totalScore").getAsInt();
+                            int voted_number = jsonObject.get("votedNumber").getAsInt();
+                            now_menu = new android.example.cs496.ui.main.fragment4.Menu(menu_name, menu_id, total_score, voted_number);
+                        }
+
+                    }
+                });
+
+    }
+
+    public ItemObject makeObject(String store, String store_id, String[] list){
         int nowTag = -1;
 
         ArrayList<android.example.cs496.ui.main.fragment4.Menu> new_menus = new ArrayList<>();
@@ -1084,13 +881,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             else {
                 if(nowTag == -1){
                     String key = list[i];// 맵에 더하기
-                    android.example.cs496.ui.main.fragment4.Menu menu = new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1);
+                    now_menu = null;
+//                    android.example.cs496.ui.main.fragment4.Menu menu = new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1);
                     new_menus = new ArrayList<>();
-                    new_menus.add(menu);
+                    getDish(list[i], store);
+                    new_menus.add(now_menu);
                     map.add(new Menus(key, new_menus));
                 }
                 else {
-                    new_menus.add(new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1));
+                    now_menu = null;
+                    getDish(list[i], store);
+                    new_menus.add(now_menu);
+//                    new_menus.add(new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1));
                 }
             }
         }
@@ -1101,8 +903,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         result = new ItemObject(store, map);
         return result;
-
-
     }
 
 
