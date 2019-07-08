@@ -37,40 +37,40 @@ exports.addUser = function(req, res){
 }
 
 exports.deleteUserStar = function(req, res){
-  User.update({id:req.params.id}, function(err, user){
-    user.scoreArray.pull({menuId: req,body,menuId});
-    user.save(function(err){
+   User.findOneAndUpdate({id:req.params.id}, {$pull: {"scoreArray": {menuId: req.body.menuId}}}, async function(err, user){
+
       if(err){
         res.send(err)
       }
-      res.json({message:"userInfo was deleted", data:user})
-    })
-  })
+      await res.json({message:"userInfo was updated", data:user});
+    });
 }
 
 exports.updateUserStar = function(req, res){
-  User.update({id:req.params.id}, function(err, user){
-    user.scoreArray.pull({menuId: req.body.menuId});
-    user.scoreArray.push({menuId: req.body.menuId, menuName: req.body.menuName, votedNumber: req.body.votedNumber, totalScore: req.body.totalScore});
-    user.save(function(err){
+   User.findOneAndUpdate({id:req.params.id}, {$pull: {"scoreArray": {menuId: req.body.menuId}}}, async function(err, user){
+
       if(err){
         res.send(err)
       }
-      res.json({message:"userInfo was updated", data:user});
+      await res.json({message:"userInfo was updated", data:user});
     });
-  });
+   User.findOneAndUpdate({id:req.params.id}, {$push: {"scoreArray": req.body}}, async function(err, user){
+
+      if(err){
+        res.send(err)
+      }
+      await res.json({message:"userInfo was updated", data:user});
+    });
 }
 
 exports.addUserStar = function(req, res){
-  User.update({id:req.params.id}, function(err, user){
-    user.scoreArray.push({menuId: req.body.menuId, menuName: req.body.menuName, votedNumber: req.body.votedNumber, totalScore: req.body.totalScore});
-    user.save(function(err){
+   User.findOneAndUpdate({id:req.params.id}, {$push: {"scoreArray": req.body}}, async function(err, user){
+
       if(err){
         res.send(err)
       }
-      res.json({message:"userInfo was deleted", data:user})
-    })
-  })
+      await res.json({message:"userInfo was updated", data:user});
+    });
 }
 
 exports.updateUser = function(req, res){
