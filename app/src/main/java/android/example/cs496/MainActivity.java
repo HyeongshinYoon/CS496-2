@@ -14,9 +14,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,7 +62,7 @@ import java.util.List;
 
 import static android.example.cs496.ui.main.fragment1.dummyData.setInitialData;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "";
     ImageButton searchButton;
     ImageButton groupButton;
@@ -86,28 +89,6 @@ public class MainActivity extends AppCompatActivity {
         initView();
         facebook_login();
 
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/2");
-                Toast.makeText(MainActivity.this, "search", Toast.LENGTH_SHORT).show();
-                //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/5","5","업데이트완료","010-0000-4141","업데이트그룹","이미지","업데이트이메일");
-                //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/112","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일"); 해당 id 삭제
-                //아이디도 스트링으로 받아서, 그 안에서 다시 정수로 변환해줘야
-                //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일");
-                //Intent intent = new Intent(MainActivity.this, SearchPhoneBook.class);
-                //startActivityForResult(intent,0);
-            }
-        });
-        groupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(MainActivity.this, "group", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(context, GroupPhoneBook.class);
-                startActivityForResult(intent,0);
-            }
-        });
-
         //new GetDataTask().execute("http://143.248.36.218:3000/api/phones"); 전체 불러옴
         //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
         //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/:id"); 주소록 바뀐 사람 추가하기, id 기준
@@ -116,6 +97,30 @@ public class MainActivity extends AppCompatActivity {
         //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone", );
 
     }
+
+    @Override
+    public void onClick(View view){
+        switch( view.getId() ){
+            case R.id.search_button:
+                //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/2");
+                Toast.makeText(MainActivity.this, "search", Toast.LENGTH_SHORT).show();
+                //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/5","5","업데이트완료","010-0000-4141","업데이트그룹","이미지","업데이트이메일");
+                //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/112","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일"); 해당 id 삭제
+                //아이디도 스트링으로 받아서, 그 안에서 다시 정수로 변환해줘야
+                //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일");
+                //Intent intent = new Intent(MainActivity.this, SearchPhoneBook.class);
+                //startActivityForResult(intent,0);
+                break;
+            case R.id.group_button:
+                //Toast.makeText(MainActivity.this, "group", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, GroupPhoneBook.class);
+                startActivityForResult(intent,0);
+                break;
+        }
+    }
+    //Popup Menu의 MenuItem을 클릭하는 것을 감지하는 listener 객체 생성
+    //import android.widget.PopupMenu.OnMenuItemClickListener 가 되어있어야 합니다.
+    //OnMenuItemClickListener 클래스는 다른 패키지에도 많기 때문에 PopupMenu에 반응하는 패키지를 임포트하셔야 합니다.
 
     public void setupViewPager(ViewPager mViewPager) {
         sectionsPagerAdapter.addFragment(new TabFragment1(), "Phone");
@@ -153,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
         groupButton =  findViewById(R.id.group_button);
         facebook_login = findViewById(R.id.login_button);
         is_login = findViewById(R.id.is_login);
+
         new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
         new GetImageTask().execute("http://143.248.36.220:3000/api/photos");
 
@@ -163,6 +169,17 @@ public class MainActivity extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
         tabs.setupWithViewPager(viewPager);
         //selecting tabs
+
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+        if(!isLoggedIn){
+            facebook_login.setVisibility(View.VISIBLE);
+            is_login.setVisibility(View.INVISIBLE);
+        } else {
+            facebook_login.setVisibility(View.INVISIBLE);
+            is_login.setVisibility(View.VISIBLE);
+        }
+
         tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -172,22 +189,19 @@ public class MainActivity extends AppCompatActivity {
                 boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
 
 
-                if(tab.getPosition()==0){
+                if(tab.getPosition()==-1){
                     searchButton.setVisibility(View.VISIBLE);
                     groupButton.setVisibility(View.VISIBLE);
                 }else {
                     searchButton.setVisibility(View.INVISIBLE);
                     groupButton.setVisibility(View.INVISIBLE);
                 }
-                if(tab.getPosition() == 2 && !isLoggedIn){
+                if(!isLoggedIn){
                     facebook_login.setVisibility(View.VISIBLE);
+                    is_login.setVisibility(View.INVISIBLE);
                 } else {
                     facebook_login.setVisibility(View.INVISIBLE);
-                    if(isLoggedIn){
-                        is_login.setVisibility(View.VISIBLE);
-                    } else {
-                        is_login.setVisibility(View.INVISIBLE);
-                    }
+                    is_login.setVisibility(View.VISIBLE);
                 }
             }
             @Override
@@ -197,7 +211,46 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+
+        is_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu p = new PopupMenu(
+                        getApplicationContext(), // 현재 화면의 제어권자
+                        view); // anchor : 팝업을 띄울 기준될 위젯
+                getMenuInflater().inflate(R.menu.popup_setting, p.getMenu());
+                // 이벤트 처리
+                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch( item.getItemId() ){//눌러진 MenuItem의 Item Id를 얻어와 식별
+                            case R.id.logout:
+                                LoginManager.getInstance().logOut();
+
+                                facebook_login.setVisibility(View.VISIBLE);
+                                is_login.setVisibility(View.INVISIBLE);
+
+                                Toast.makeText(MainActivity.this, "LOGOUT", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.leave_account:
+                                Toast.makeText(MainActivity.this, "SEARCH", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+
+                        return false;
+                    }
+                });
+                p.show();
+            }
+        });
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.popup_setting, menu);
+        return true;
+    }
+
     // 데이터베이스에서 가져오거나 보내는 4가지
     // 데이터베이스에서 모든 데이터 가져오기
     class GetDataTask extends AsyncTask<String, Void, String> {

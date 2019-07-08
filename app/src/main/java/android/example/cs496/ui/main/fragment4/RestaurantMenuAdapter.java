@@ -52,7 +52,6 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ViewHolder");
-            imageView_img = (ImageView) itemView.findViewById(R.id.iv_menu);
             textView_menu_name = (TextView) itemView.findViewById(R.id.tv_menu);
             textView_menu_score = (TextView) itemView.findViewById(R.id.tv_menu_score);
 
