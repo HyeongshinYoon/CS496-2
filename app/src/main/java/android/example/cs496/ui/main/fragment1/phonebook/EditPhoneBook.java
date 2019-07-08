@@ -77,7 +77,7 @@ public class EditPhoneBook extends AppCompatActivity implements View.OnClickList
         textEmail = findViewById(R.id.tv_sub_edit_email);
         textEmail.setText(mRecycelerItem.getEmail());
 
-        mSave = findViewById(R.id.set_save);
+        mSave =  findViewById(R.id.set_save);
         mSave.setOnClickListener(this);
         mCancel = findViewById(R.id.set_cancel);
         mCancel.setOnClickListener(this);
