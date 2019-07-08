@@ -10,16 +10,23 @@ import android.example.cs496.ui.main.TabFragment2;
 import android.example.cs496.ui.main.TabFragment3;
 import android.example.cs496.ui.main.TabFragment4;
 import android.example.cs496.ui.main.fragment1.phonebook.GroupPhoneBook;
+import android.example.cs496.ui.main.fragment4.ItemObject;
+import android.example.cs496.ui.main.fragment4.Tab4Adapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.facebook.AccessToken;
@@ -37,12 +44,17 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.gson.JsonObject;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
+import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -55,11 +67,14 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import static android.example.cs496.ui.main.fragment1.dummyData.setInitialData;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "";
     ImageButton searchButton;
     ImageButton groupButton;
@@ -68,8 +83,14 @@ public class MainActivity extends AppCompatActivity {
     SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
     public static ArrayList<Integer> imageList = new ArrayList<>();
     public static int lastImageNum = 1;
+    public static int last_store_id = 1;
     Context context;
     private CallbackManager callbackManager;
+
+    private ArrayList<String> storeArray = new ArrayList();
+    private ArrayList<String> menuArray = new ArrayList();
+    public static ArrayList<ItemObject> totalArray = new ArrayList();
+
 
     LoginButton facebook_login;
     LinearLayout is_login;
@@ -85,28 +106,8 @@ public class MainActivity extends AppCompatActivity {
         checkPermissions();
         initView();
         facebook_login();
+        new Description().execute(); // 받아오고 연결하는 과정
 
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/2");
-                Toast.makeText(MainActivity.this, "search", Toast.LENGTH_SHORT).show();
-                //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/5","5","업데이트완료","010-0000-4141","업데이트그룹","이미지","업데이트이메일");
-                //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/112","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일"); 해당 id 삭제
-                //아이디도 스트링으로 받아서, 그 안에서 다시 정수로 변환해줘야
-                //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일");
-                //Intent intent = new Intent(MainActivity.this, SearchPhoneBook.class);
-                //startActivityForResult(intent,0);
-            }
-        });
-        groupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(MainActivity.this, "group", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(context, GroupPhoneBook.class);
-                startActivityForResult(intent,0);
-            }
-        });
 
         //new GetDataTask().execute("http://143.248.36.218:3000/api/phones"); 전체 불러옴
         //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
@@ -116,6 +117,30 @@ public class MainActivity extends AppCompatActivity {
         //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone", );
 
     }
+
+    @Override
+    public void onClick(View view){
+        switch( view.getId() ){
+            case R.id.search_button:
+                //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/2");
+                Toast.makeText(MainActivity.this, "search", Toast.LENGTH_SHORT).show();
+                //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/5","5","업데이트완료","010-0000-4141","업데이트그룹","이미지","업데이트이메일");
+                //new DeleteDataTask().execute("http://143.248.36.218:3000/api/deletePhone/112","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일"); 해당 id 삭제
+                //아이디도 스트링으로 받아서, 그 안에서 다시 정수로 변환해줘야
+                //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone","112","나영연포포스트","010-1212-4141","뉴그룹","이미지","이메일");
+                //Intent intent = new Intent(MainActivity.this, SearchPhoneBook.class);
+                //startActivityForResult(intent,0);
+                break;
+            case R.id.group_button:
+                //Toast.makeText(MainActivity.this, "group", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, GroupPhoneBook.class);
+                startActivityForResult(intent,0);
+                break;
+        }
+    }
+    //Popup Menu의 MenuItem을 클릭하는 것을 감지하는 listener 객체 생성
+    //import android.widget.PopupMenu.OnMenuItemClickListener 가 되어있어야 합니다.
+    //OnMenuItemClickListener 클래스는 다른 패키지에도 많기 때문에 PopupMenu에 반응하는 패키지를 임포트하셔야 합니다.
 
     public void setupViewPager(ViewPager mViewPager) {
         sectionsPagerAdapter.addFragment(new TabFragment1(), "Phone");
@@ -153,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
         groupButton =  findViewById(R.id.group_button);
         facebook_login = findViewById(R.id.login_button);
         is_login = findViewById(R.id.is_login);
+
         new GetDataTask().execute("http://143.248.36.220:3000/api/phones");
         new GetImageTask().execute("http://143.248.36.220:3000/api/photos");
 
@@ -163,6 +189,17 @@ public class MainActivity extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
         tabs.setupWithViewPager(viewPager);
         //selecting tabs
+
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+        if(!isLoggedIn){
+            facebook_login.setVisibility(View.VISIBLE);
+            is_login.setVisibility(View.INVISIBLE);
+        } else {
+            facebook_login.setVisibility(View.INVISIBLE);
+            is_login.setVisibility(View.VISIBLE);
+        }
+
         tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -172,22 +209,19 @@ public class MainActivity extends AppCompatActivity {
                 boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
 
 
-                if(tab.getPosition()==0){
+                if(tab.getPosition()==-1){
                     searchButton.setVisibility(View.VISIBLE);
                     groupButton.setVisibility(View.VISIBLE);
                 }else {
                     searchButton.setVisibility(View.INVISIBLE);
                     groupButton.setVisibility(View.INVISIBLE);
                 }
-                if(tab.getPosition() == 2 && !isLoggedIn){
+                if(!isLoggedIn){
                     facebook_login.setVisibility(View.VISIBLE);
+                    is_login.setVisibility(View.INVISIBLE);
                 } else {
                     facebook_login.setVisibility(View.INVISIBLE);
-                    if(isLoggedIn){
-                        is_login.setVisibility(View.VISIBLE);
-                    } else {
-                        is_login.setVisibility(View.INVISIBLE);
-                    }
+                    is_login.setVisibility(View.VISIBLE);
                 }
             }
             @Override
@@ -197,7 +231,46 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+
+        is_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu p = new PopupMenu(
+                        getApplicationContext(), // 현재 화면의 제어권자
+                        view); // anchor : 팝업을 띄울 기준될 위젯
+                getMenuInflater().inflate(R.menu.popup_setting, p.getMenu());
+                // 이벤트 처리
+                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch( item.getItemId() ){//눌러진 MenuItem의 Item Id를 얻어와 식별
+                            case R.id.logout:
+                                LoginManager.getInstance().logOut();
+
+                                facebook_login.setVisibility(View.VISIBLE);
+                                is_login.setVisibility(View.INVISIBLE);
+
+                                Toast.makeText(MainActivity.this, "LOGOUT", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.leave_account:
+                                Toast.makeText(MainActivity.this, "SEARCH", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+
+                        return false;
+                    }
+                });
+                p.show();
+            }
+        });
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.popup_setting, menu);
+        return true;
+    }
+
     // 데이터베이스에서 가져오거나 보내는 4가지
     // 데이터베이스에서 모든 데이터 가져오기
     class GetDataTask extends AsyncTask<String, Void, String> {
@@ -755,6 +828,149 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    public void GetStore(String store_name){
+        Future<JsonObject> json = Ion.with(context)
+                .load("http://143.248.36.220:3000/api/store")
+                .setBodyParameter("name", store_name)
+                .asJsonObject();
+
+        try {
+            JsonObject jo = json.get();
+            if(jo.get("name") == null){
+                addStore(store_name);
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addStore(String store_name) {
+        Ion.with(context)
+                .load("http://143.248.36.220:3000/api/addStore")
+                .setBodyParameter("id", String.valueOf(last_store_id))
+                .setBodyParameter("name", store_name)
+                .asJsonArray();
+    }
+
+    private class Description extends AsyncTask<Void, Void, Void> {
+
+        //진행바표시
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            //진행다일로그 시작
+//            progressDialog = new ProgressDialog(context); // 문제 생기면 바로 지우기
+//            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            progressDialog.setMessage("잠시 기다려 주세요.");
+//            progressDialog.show();
+
+        }
+        protected Void doInBackground(Void... params) {
+            try {
+                totalArray = new ArrayList<>();
+                Document doc = Jsoup.connect("https://bds.bablabs.com/restaurants?campus_id=JEnfpqCUuR").get();;
+                Elements elements =doc.select("h4.card-title");
+                Elements menus = doc.select("div.card-title");
+                int mSize = elements.size();
+                System.out.println("#of stores:"+elements.size());
+
+                for(Element element : elements) {
+                    String my_title = element.text();
+                    storeArray.add(my_title);
+                }
+                for(Element element : menus){
+                    String my_menu = element.text();
+                    menuArray.add(my_menu);
+                }
+                for(int i=0; i<=mSize-1; i++){
+                    String store = storeArray.get(i);
+                    String menu = menuArray.get(i);
+                    String[] menuRefined = refineString(menu);
+                    ItemObject itemObject = makeObject(store, menuRefined);
+                    totalArray.add(itemObject);
+
+                    System.out.println(itemObject.getTitle());
+                    Map<String,ArrayList<android.example.cs496.ui.main.fragment4.Menu>> hm =itemObject.getMenus();
+                    for(Map.Entry<String,ArrayList<android.example.cs496.ui.main.fragment4.Menu>> entry : hm.entrySet()){
+
+                        System.out.println("key : " + entry.getKey() + " , value : " + entry.getValue());
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            //ArraList를 인자로 해서 어답터와 연결한다.
+
+//            progressDialog.dismiss();
+        }
+    }
+    public String[] refineString(String string){
+        string = string.trim();
+        if(string.startsWith("식당에서")){
+            String[] list = new String[1];
+            list[0] ="식당에서 메뉴를 업로드하지 않았습니다.";
+            return  list;
+        }else{
+            string = string.replace("₩ ", "₩");
+            string = string.replace("-마로니애- ", "");
+            string = string.replace("메뉴 ", "메뉴");
+            string = string.replace("0 ","0");
+            string = string.replace("> ", ">");
+            string = string.replace("0원>","0원> ");
+            String[] list = string.split(" ");
+            return  list;
+        }
+    }
+
+    public ItemObject makeObject(String store, String[] list){
+        int nowTag = -1;
+
+        ArrayList<android.example.cs496.ui.main.fragment4.Menu> new_menus = new ArrayList<>();
+        ItemObject result;
+        Map<String, ArrayList<android.example.cs496.ui.main.fragment4.Menu>> map = new HashMap<String, ArrayList<android.example.cs496.ui.main.fragment4.Menu>>();
+        for(int i = 0; i<=list.length-1; i++){
+            if(list[i].startsWith("<")||list[i].startsWith("(한식")||list[i].startsWith("(죽식")){ // 태그 일 때, 다른 태그도 있을 수 있음, 북측의 일품메뉴는 별로 시작함
+                if(nowTag != -1){
+                    String key = list[nowTag];
+                    ArrayList<android.example.cs496.ui.main.fragment4.Menu> value = new_menus;
+                    map.put(key, value);
+                }
+                nowTag = i;
+                new_menus = new ArrayList<>();
+            }
+            else {
+                if(nowTag == -1){
+                    String key = list[i];// 맵에 더하기
+                    android.example.cs496.ui.main.fragment4.Menu menu = new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1);
+                    new_menus = new ArrayList<>();
+                    new_menus.add(menu);
+                    map.put(key, new_menus);
+                }
+                else {
+                    new_menus.add(new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1));
+                }
+            }
+        }
+        if(nowTag != -1){
+            String key = list[nowTag];
+            ArrayList<android.example.cs496.ui.main.fragment4.Menu> value = new_menus;
+            map.put(key, value);
+        }
+        result = new ItemObject(store, map);
+        return result;
+
+
+    }
 
 
 //    private void getHashKey() {
