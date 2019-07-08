@@ -7,11 +7,9 @@ import android.content.Intent;
 import android.example.cs496.ui.main.SectionsPagerAdapter;
 import android.example.cs496.ui.main.TabFragment1;
 import android.example.cs496.ui.main.TabFragment2;
-import android.example.cs496.ui.main.TabFragment3;
 import android.example.cs496.ui.main.TabFragment4;
 import android.example.cs496.ui.main.fragment1.phonebook.GroupPhoneBook;
 import android.example.cs496.ui.main.fragment4.ItemObject;
-import android.example.cs496.ui.main.fragment4.Tab4Adapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,8 +23,6 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.facebook.AccessToken;
@@ -44,7 +40,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.gson.JsonObject;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
-import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
@@ -57,20 +52,16 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import static android.example.cs496.ui.main.fragment1.dummyData.setInitialData;
 
@@ -104,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AppEventsLogger.activateApp(this);
         setContentView(R.layout.activity_main);
         checkPermissions();
+        new GetStores().execute("http://143.248.36.220:3000/api/stores");
+        System.out.println("last_store"+last_store_id);
         initView();
         facebook_login();
         new Description().execute(); // 받아오고 연결하는 과정
@@ -346,85 +339,85 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    class PostDataTask extends AsyncTask<String, Void, String> {
-
-        ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMessage("Inserting data...");
-            progressDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... params){
-
-            try {
-                return postData(params[0]);
-            } catch (IOException ex){
-                return "Network error !";
-            } catch (JSONException ex){
-                return "Data Invalid !";
-            }
-        }
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            if(progressDialog != null) {
-                progressDialog.dismiss();
-            }
-        }
-
-        private String postData(String urlPath) throws IOException, JSONException {
-
-            StringBuilder result = new StringBuilder();
-            BufferedWriter bufferedWriter = null;
-            BufferedReader bufferedReader = null;
-
-            try {
-                JSONObject dataToSend = new JSONObject();
-                dataToSend.put("id", 1);
-                dataToSend.put("name", "Kelly");
-                dataToSend.put("phone", "010-1234-5678");
-                dataToSend.put("group", "KAIST");
-                dataToSend.put("img", "");
-                dataToSend.put("email", "abc@kaist.ac.kr");
-
-                System.out.println("send"+dataToSend);
-                URL url = new URL(urlPath);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setReadTimeout(10000 /* milliseconds */);
-                urlConnection.setConnectTimeout(10000 /* millisecods */);
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setDoOutput(true); //enable output (body data)
-                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
-                urlConnection.connect();
-
-                OutputStream outputStream = urlConnection.getOutputStream();
-                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-                bufferedWriter.write(dataToSend.toString());
-                bufferedWriter.flush();
-
-                InputStream inputStream = urlConnection.getInputStream();
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    result.append(line).append("\n");
-                }
-            } finally {
-                if( bufferedReader != null) {
-                    bufferedReader.close();
-                }
-                if(bufferedWriter != null){
-                    bufferedWriter.close();
-                }
-            }
-            return result.toString();
-        }
-    }
+//    class PostDataTask extends AsyncTask<String, Void, String> {
+//
+//        ProgressDialog progressDialog;
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            progressDialog = new ProgressDialog(MainActivity.this);
+//            progressDialog.setMessage("Inserting data...");
+//            progressDialog.show();
+//        }
+//
+//        @Override
+//        protected String doInBackground(String... params){
+//
+//            try {
+//                return postData(params[0]);
+//            } catch (IOException ex){
+//                return "Network error !";
+//            } catch (JSONException ex){
+//                return "Data Invalid !";
+//            }
+//        }
+//        @Override
+//        protected void onPostExecute(String result) {
+//            super.onPostExecute(result);
+//
+//            if(progressDialog != null) {
+//                progressDialog.dismiss();
+//            }
+//        }
+//
+//        private String postData(String urlPath) throws IOException, JSONException {
+//
+//            StringBuilder result = new StringBuilder();
+//            BufferedWriter bufferedWriter = null;
+//            BufferedReader bufferedReader = null;
+//
+//            try {
+//                JSONObject dataToSend = new JSONObject();
+//                dataToSend.put("id", 1);
+//                dataToSend.put("name", "Kelly");
+//                dataToSend.put("phone", "010-1234-5678");
+//                dataToSend.put("group", "KAIST");
+//                dataToSend.put("img", "");
+//                dataToSend.put("email", "abc@kaist.ac.kr");
+//
+//                System.out.println("send"+dataToSend);
+//                URL url = new URL(urlPath);
+//                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//                urlConnection.setReadTimeout(10000 /* milliseconds */);
+//                urlConnection.setConnectTimeout(10000 /* millisecods */);
+//                urlConnection.setRequestMethod("POST");
+//                urlConnection.setDoOutput(true); //enable output (body data)
+//                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+//                urlConnection.connect();
+//
+//                OutputStream outputStream = urlConnection.getOutputStream();
+//                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
+//                bufferedWriter.write(dataToSend.toString());
+//                bufferedWriter.flush();
+//
+//                InputStream inputStream = urlConnection.getInputStream();
+//                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+//                String line;
+//                while ((line = bufferedReader.readLine()) != null) {
+//                    result.append(line).append("\n");
+//                }
+//            } finally {
+//                if( bufferedReader != null) {
+//                    bufferedReader.close();
+//                }
+//                if(bufferedWriter != null){
+//                    bufferedWriter.close();
+//                }
+//            }
+//            return result.toString();
+//        }
+//    }
 
     //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
 //    class PostDataTask extends AsyncTask<String, Void, String> {
@@ -510,141 +503,141 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //    }
 
     //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/:id"); 주소록 바뀐 사람 추가하기, id 기준
-    class PutDataTask extends AsyncTask<String, Void, String> {
-
-        ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
+//    class PutDataTask extends AsyncTask<String, Void, String> {
+//
+//        ProgressDialog progressDialog;
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//
+////            progressDialog = new ProgressDialog(MainActivity.this);
+////            progressDialog.setMessage("Updating data...");
+////            progressDialog.show();
+//        }
+//
+//        @Override
+//        protected String doInBackground(String... params) {
+//            try {
+//                return putData(params[0], params[1], params[2], params[3], params[4], params[5],params[6]);
+//            } catch (IOException ex) {
+//                return "Network Error !";
+//            } catch (JSONException ex) {
+//                return "Data invalid !";
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String result) {
+//            super.onPostExecute(result);
+//
+//            System.out.println("update"+result);
+//
+//            if(progressDialog != null){
+//                progressDialog.dismiss();
+//            }
+//        }
+//
+//        private String putData(String urlPath, String strId, String name, String phone, String group, String img, String email) throws IOException, JSONException {
+//
+//            BufferedWriter bufferedWriter = null;
+//            String result = null;
+//
+//            int id = Integer.parseInt(strId);
+//
+//            try {
+//                JSONObject dataToSend = new JSONObject();
+//                dataToSend.put("id", id);
+//                dataToSend.put("name", name);
+//                dataToSend.put("phone", phone);
+//                dataToSend.put("group", group);
+//                dataToSend.put("img", "");
+//                dataToSend.put("email", email);
+//
+//                URL url = new URL(urlPath);
+//                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//                urlConnection.setReadTimeout(10000 /* milliseconds */);
+//                urlConnection.setConnectTimeout(10000 /* millisecods */);
+//                urlConnection.setRequestMethod("POST");
+//                urlConnection.setDoOutput(true); //enable output (body data)
+//                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+//                urlConnection.connect();
+//                // write data into server
+//                OutputStream outputStream = urlConnection.getOutputStream();
+//                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
+//                bufferedWriter.write(dataToSend.toString());
+//                bufferedWriter.flush();
+//
+//                System.out.println("ResponseCode: "+urlConnection.getResponseCode());
+//
+//                if (urlConnection.getResponseCode() == 200) {
+//                    return "Update successfully !";
+//                } else {
+//                    return "Update failed !";
+//                }
+//            } finally {
+//                if(bufferedWriter != null) {
+//                    bufferedWriter.close();
+//                }
+//            }
+//        }
+//    }
+//
+//    class DeleteDataTask extends AsyncTask<String, Void, String> {
+//
+//        ProgressDialog progressDialog;
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//
 //            progressDialog = new ProgressDialog(MainActivity.this);
-//            progressDialog.setMessage("Updating data...");
+//            progressDialog.setMessage("Deleting data...");
 //            progressDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                return putData(params[0], params[1], params[2], params[3], params[4], params[5],params[6]);
-            } catch (IOException ex) {
-                return "Network Error !";
-            } catch (JSONException ex) {
-                return "Data invalid !";
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            System.out.println("update"+result);
-
-            if(progressDialog != null){
-                progressDialog.dismiss();
-            }
-        }
-
-        private String putData(String urlPath, String strId, String name, String phone, String group, String img, String email) throws IOException, JSONException {
-
-            BufferedWriter bufferedWriter = null;
-            String result = null;
-
-            int id = Integer.parseInt(strId);
-
-            try {
-                JSONObject dataToSend = new JSONObject();
-                dataToSend.put("id", id);
-                dataToSend.put("name", name);
-                dataToSend.put("phone", phone);
-                dataToSend.put("group", group);
-                dataToSend.put("img", "");
-                dataToSend.put("email", email);
-
-                URL url = new URL(urlPath);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setReadTimeout(10000 /* milliseconds */);
-                urlConnection.setConnectTimeout(10000 /* millisecods */);
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setDoOutput(true); //enable output (body data)
-                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
-                urlConnection.connect();
-                // write data into server
-                OutputStream outputStream = urlConnection.getOutputStream();
-                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-                bufferedWriter.write(dataToSend.toString());
-                bufferedWriter.flush();
-
-                System.out.println("ResponseCode: "+urlConnection.getResponseCode());
-
-                if (urlConnection.getResponseCode() == 200) {
-                    return "Update successfully !";
-                } else {
-                    return "Update failed !";
-                }
-            } finally {
-                if(bufferedWriter != null) {
-                    bufferedWriter.close();
-                }
-            }
-        }
-    }
-
-    class DeleteDataTask extends AsyncTask<String, Void, String> {
-
-        ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMessage("Deleting data...");
-            progressDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                return deleteData(params[0]);
-            } catch (IOException ex) {
-                return "Network error !";
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            System.out.println("delete"+result);
-            if(progressDialog != null){
-                progressDialog.dismiss();
-            }
-        }
-
-        private String deleteData(String urlPath) throws IOException {
-
-            String result = null;
-
-            URL url = new URL(urlPath+"/1");
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setReadTimeout(10000 /* milliseconds */);
-            urlConnection.setConnectTimeout(10000 /* millisecods */);
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
-            urlConnection.connect();
-
-            System.out.println("delete: "+urlConnection.getResponseCode());
-
-            if (urlConnection.getResponseCode() == 200) {
-                result = "Delete Successfully !";
-            } else {
-                result = "Delete failed !";
-            }
-
-            return result;
-        }
-    }
+//        }
+//
+//        @Override
+//        protected String doInBackground(String... params) {
+//            try {
+//                return deleteData(params[0]);
+//            } catch (IOException ex) {
+//                return "Network error !";
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String result) {
+//            super.onPostExecute(result);
+//
+//            System.out.println("delete"+result);
+//            if(progressDialog != null){
+//                progressDialog.dismiss();
+//            }
+//        }
+//
+//        private String deleteData(String urlPath) throws IOException {
+//
+//            String result = null;
+//
+//            URL url = new URL(urlPath+"/1");
+//            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//            urlConnection.setReadTimeout(10000 /* milliseconds */);
+//            urlConnection.setConnectTimeout(10000 /* millisecods */);
+//            urlConnection.setRequestMethod("GET");
+//            urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+//            urlConnection.connect();
+//
+//            System.out.println("delete: "+urlConnection.getResponseCode());
+//
+//            if (urlConnection.getResponseCode() == 200) {
+//                result = "Delete Successfully !";
+//            } else {
+//                result = "Delete failed !";
+//            }
+//
+//            return result;
+//        }
+//    }
 
     class GetImageTask extends AsyncTask<String, Void, String> {
 
@@ -828,30 +821,91 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void GetStore(String store_name){
-        Future<JsonObject> json = Ion.with(context)
-                .load("http://143.248.36.220:3000/api/store")
-                .setBodyParameter("name", store_name)
-                .asJsonObject();
+    class GetStores extends AsyncTask<String, Void, String> {
 
-        try {
-            JsonObject jo = json.get();
-            if(jo.get("name") == null){
-                addStore(store_name);
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setMessage("Loading data...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params){
+            // initialize and config request, then connect to server
+            try {
+                return getData(params[0]);
+            }catch (IOException ex){
+                return "Network error !";
             }
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+            super.onPostExecute(result);
+
+            // Result(jSONArray가 String 형식으로 들어옴)
+            JSONArray ja = null;
+            try {
+                // type을 JSONArray로 바꾼 후, setInitialData(JSONArray) 실행
+                ja = new JSONArray(result);
+                for (int i = 0; i < ja.length(); i++) {
+                    JSONObject j = ja.getJSONObject(i);
+                    if(j.getInt("id") >= last_store_id) last_store_id = j.getInt("id") + 1;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if(progressDialog != null){
+                progressDialog.dismiss();
+            }
+        }
+
+        private String getData(String urlPath) throws IOException {
+            StringBuilder result = new StringBuilder();
+            BufferedReader bufferedReader = null;
+
+            try {
+                URL url = new URL(urlPath);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setReadTimeout(10000 /* milliseconds */);
+                urlConnection.setConnectTimeout(10000 /* millisecods */);
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
+                urlConnection.connect();
+
+                InputStream inputStream = urlConnection.getInputStream();
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    result.append(line).append("\n");
+                }
+
+            } finally {
+                if(bufferedReader != null){
+                    bufferedReader.close();
+                }
+            }
+
+            System.out.println(result);
+            return result.toString();
         }
     }
 
-    private void addStore(String store_name) {
+    private int addStore(String store_name) {
         Ion.with(context)
                 .load("http://143.248.36.220:3000/api/addStore")
                 .setBodyParameter("id", String.valueOf(last_store_id))
                 .setBodyParameter("name", store_name)
                 .asJsonArray();
+
+        last_store_id += 1;
+        return last_store_id - 1;
     }
 
     private class Description extends AsyncTask<Void, Void, Void> {
@@ -874,7 +928,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             try {
                 totalArray = new ArrayList<>();
                 Document doc = Jsoup.connect("https://bds.bablabs.com/restaurants?campus_id=JEnfpqCUuR").get();;
-                Elements elements =doc.select("h4.card-title");
+                Elements elements = doc.select("h4.card-title");
                 Elements menus = doc.select("div.card-title");
                 int mSize = elements.size();
                 System.out.println("#of stores:"+elements.size());
@@ -887,7 +941,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     String my_menu = element.text();
                     menuArray.add(my_menu);
                 }
-                for(int i=0; i<=mSize-1; i++){
+                for(int i = 0; i <= mSize - 1; i++){
                     String store = storeArray.get(i);
                     String menu = menuArray.get(i);
                     String[] menuRefined = refineString(menu);
