@@ -12,7 +12,6 @@ exports.getStores = function(req, res){
 };
 
 exports.getStore = function(req, res){
-
   Store.find({name:req.body.name}, function(err, user){
       if(err){
         res.send(err);
@@ -21,9 +20,16 @@ exports.getStore = function(req, res){
   });
 }
 
+exports.getStoreMenu = function(req, res){
+  Store.find({id:req.params.id, scoreArray: {menuName:req.body.menuName}}, function(err, menu){
+    if(err){
+      res.send(err);
+    }res.json(menu);
+  });
+}
+
 exports.addStore = function(req, res){
   var store = new Store();
-
   store.id = req.body.id;
   store.name = req.body.name;
   store.scoreArray = req.body.scoreArray;
@@ -38,46 +44,42 @@ exports.addStore = function(req, res){
 }
 
 exports.deleteStoreStar = function(req, res){
-  Store.update({id:req.params.id}, function(err, user){
-    user.scoreArray.pull({menuNumber: req.body.id});
-    user.save(function(err){
+
+   Store.findOneAndUpdate({id:req.params.id}, {$pull: {"scoreArray": {menuId: req.body.menuId}}}, async function(err, user){
       if(err){
         res.send(err)
       }
-      res.json({message:"userInfo was updated", data:user});
+      await res.json({message:"storeInfo was updated", data:user});
     });
-  });
 }
 
 exports.updateStoreStar = function(req, res){
-  Store.update({id:req.params.id}, function(err, user){
-    user.scoreArray.pull({menuNumber: req.body.id});
-    user.scoreArray.push({menuNumber: req.body.id, score: req.body.score});
-    user.save(function(err){
+
+   Store.findOneAndUpdate({id:req.params.id}, {$pull: {"scoreArray": {menuId: req.body.menuId}}}, async function(err, user){
       if(err){
         res.send(err)
       }
-      res.json({message:"userInfo was updated", data:user});
+      await res.json({message:"storeInfo was updated", data:user});
     });
-  });
+   Store.findOneAndUpdate({id:req.params.id}, {$push: {"scoreArray": req.body}}, async function(err, user){
+      if(err){
+        res.send(err)
+      }
+      await res.json({message:"storeInfo was updated", data:user});
+    });
 }
 
 exports.addStoreStar = function(req, res){
-  Store.update({id:req.params.id}, function(err, user){
-    user.scoreArray.push({menuNumber: req.body.id, score: req.body.score});
-    user.save(function(err){
+   Store.findOneAndUpdate({id:req.params.id}, {$push: {"scoreArray": req.body}}, async function(err, user){
       if(err){
         res.send(err)
       }
-      res.json({message:"userInfo was updated", data:user});
+      await res.json({message:"storeInfo was updated", data:user});
     });
-  });
 }
 
 exports.updateStore = function(req, res){
-
   Store.update({id:req.params.id}, {
-    id:req.body.id,
     name:req.body.name,
     scoreArray:req.body.scoreArray,
   }, function(err, num, raw){
@@ -89,7 +91,6 @@ exports.updateStore = function(req, res){
 }
 
 exports.deleteStore = function(req, res){
-
   Store.deleteOne({id:req.params.id}, function(err){
       if(err){
         res.send(err)

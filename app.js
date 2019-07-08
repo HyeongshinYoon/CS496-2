@@ -56,18 +56,19 @@ router.route("/addPhoto").post(upload.single("data"), galleryController.addPhoto
 router.route("/deletePhoto/:label").get(galleryController.deletePhoto);
 
 router.route("/users").get(userController.getUsers);
-router.route("/user/:id").get(userController.getUser);
+router.route("/user/:id").get(userController.getUser); //id = facebook id
 router.route("/addUser").post(userController.addUser);
-router.route("/updateUser").post(userController.updateUser);
+router.route("/updateUser/:id").post(userController.updateUser);
 router.route("/deleteUserStar/:id").post(userController.deleteUserStar);
 router.route("/updateUserStar/:id").post(userController.updateUserStar);
 router.route("/addUserStar/:id").post(userController.addUserStar);
 router.route("/deleteUser/:id").get(userController.deleteUser);
 
 router.route("/stores").get(storeController.getStores);
-router.route("/store/:id").get(storeController.getStore);
+router.route("/store").post(storeController.getStore);
+router.route("/storeMenu/:id").post(storeController.getStoreMenu);
 router.route("/addStore").post(storeController.addStore);
-router.route("/updateStore").post(storeController.updateStore);
+router.route("/updateStore/:id").post(storeController.updateStore);
 router.route("/deleteStoreStar/:id").post(storeController.deleteStoreStar);
 router.route("/updateStoreStar/:id").post(storeController.updateStoreStar);
 router.route("/addStoreStar/:id").post(storeController.addStoreStar);

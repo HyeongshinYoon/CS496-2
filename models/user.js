@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 
 // Define Schemes
 var scoreSchema = new mongoose.Schema({
-  menuNumber: Number,
+  menuId: Number,
   score: Number,
-});
+},{ _id: false });
 
 var userSchema = new mongoose.Schema({
   id: {
