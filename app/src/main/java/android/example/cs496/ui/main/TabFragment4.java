@@ -64,7 +64,7 @@ public class TabFragment4 extends Fragment {
         recyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
-        //resetData();// refresh data, set Recyclerview@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@바로바로 업데이트 되게
+        //resetData();// refresh data, set Recyclerview@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@바로바로 업데이트 되게, 이 다음(별점 수정 부분)에서 정보 업데이트되면 바로 반영되게
 
         Tab4Adapter myAdapter = new Tab4Adapter(totalArray);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
@@ -77,14 +77,11 @@ public class TabFragment4 extends Fragment {
                     public void onItemClick(View view, int position) {
                         Intent intent =new Intent(context, RestaurantBookActivity.class);
                         ItemObject item = totalArray.get(position); // 아이템 오브젝트 하나
-                        intent.putExtra("store_select", item); //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 아이템 데이터 타입 확인, 이렇게 해도 가능??
-                        intent.putExtra("store_state", "1"); //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 여기 스테이트 의미가 없나?? 아마 없을 듯 아래의 리퀘스트코드
+                        intent.putExtra("store_select", item);
+                        //intent.putExtra("store_state", "1");
                         startActivityForResult(intent,0);
                     }
                 }));
         return v;
     }
-
-
-
 }

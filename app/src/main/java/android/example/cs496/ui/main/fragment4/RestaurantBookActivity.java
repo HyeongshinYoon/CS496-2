@@ -39,7 +39,8 @@ public class RestaurantBookActivity extends AppCompatActivity {
         System.out.println("test for intent of RestaurantBookActivity:" +test);
         TextView store_title = (TextView) findViewById(R.id.restaurants_title);
         store_title.setText(item.getTitle());//
-        Map<String, ArrayList<Menu>> menus = item.getMenus();
+        //Map<String, ArrayList<Menu>> menus = item.getMenus();
+        ArrayList<Menus> arrayOfMenus =  item.getMenus();
 
 //        store_name = item.getTitle();
 //        menu_list = item.getMenus();
@@ -51,7 +52,7 @@ public class RestaurantBookActivity extends AppCompatActivity {
 //        menu_list[0]= "첫번째";
 //        menu_list[1]= "두번째";
 
-        adapter = new RestaurantMenuAdapter( menus); //어댑터 고쳐야 ? 어댑터에서 Map Menus 받아오게 해야
+        adapter = new RestaurantMenuAdapter(arrayOfMenus); //어댑터 고쳐야 ? 어댑터에서 Map Menus 받아오게 해야
 //
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         //layoutManager.scrollToPositionWithOffset(0,0);

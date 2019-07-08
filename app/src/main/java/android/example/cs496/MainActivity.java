@@ -11,6 +11,7 @@ import android.example.cs496.ui.main.TabFragment3;
 import android.example.cs496.ui.main.TabFragment4;
 import android.example.cs496.ui.main.fragment1.phonebook.GroupPhoneBook;
 import android.example.cs496.ui.main.fragment4.ItemObject;
+import android.example.cs496.ui.main.fragment4.Menus;
 import android.example.cs496.ui.main.fragment4.Tab4Adapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -116,7 +117,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 영연 143.248.36.218
         //new PostDataTask().execute("http://143.248.36.220:3000/api/addPhone", );
 
+        addStore("학부 식당");
+
     }
+
+
 
     @Override
     public void onClick(View view){
@@ -207,7 +212,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //검색, 그룹 버튼이 Tab1에만 보이도록
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
                 boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
-
 
                 if(tab.getPosition()==-1){
                     searchButton.setVisibility(View.VISIBLE);
@@ -509,143 +513,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        }
 //    }
 
-    //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/:id"); 주소록 바뀐 사람 추가하기, id 기준
-    class PutDataTask extends AsyncTask<String, Void, String> {
-
-        ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-//            progressDialog = new ProgressDialog(MainActivity.this);
-//            progressDialog.setMessage("Updating data...");
-//            progressDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                return putData(params[0], params[1], params[2], params[3], params[4], params[5],params[6]);
-            } catch (IOException ex) {
-                return "Network Error !";
-            } catch (JSONException ex) {
-                return "Data invalid !";
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            System.out.println("update"+result);
-
-            if(progressDialog != null){
-                progressDialog.dismiss();
-            }
-        }
-
-        private String putData(String urlPath, String strId, String name, String phone, String group, String img, String email) throws IOException, JSONException {
-
-            BufferedWriter bufferedWriter = null;
-            String result = null;
-
-            int id = Integer.parseInt(strId);
-
-            try {
-                JSONObject dataToSend = new JSONObject();
-                dataToSend.put("id", id);
-                dataToSend.put("name", name);
-                dataToSend.put("phone", phone);
-                dataToSend.put("group", group);
-                dataToSend.put("img", "");
-                dataToSend.put("email", email);
-
-                URL url = new URL(urlPath);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setReadTimeout(10000 /* milliseconds */);
-                urlConnection.setConnectTimeout(10000 /* millisecods */);
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setDoOutput(true); //enable output (body data)
-                urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
-                urlConnection.connect();
-                // write data into server
-                OutputStream outputStream = urlConnection.getOutputStream();
-                bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-                bufferedWriter.write(dataToSend.toString());
-                bufferedWriter.flush();
-
-                System.out.println("ResponseCode: "+urlConnection.getResponseCode());
-
-                if (urlConnection.getResponseCode() == 200) {
-                    return "Update successfully !";
-                } else {
-                    return "Update failed !";
-                }
-            } finally {
-                if(bufferedWriter != null) {
-                    bufferedWriter.close();
-                }
-            }
-        }
-    }
-
-    class DeleteDataTask extends AsyncTask<String, Void, String> {
-
-        ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMessage("Deleting data...");
-            progressDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                return deleteData(params[0]);
-            } catch (IOException ex) {
-                return "Network error !";
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            System.out.println("delete"+result);
-            if(progressDialog != null){
-                progressDialog.dismiss();
-            }
-        }
-
-        private String deleteData(String urlPath) throws IOException {
-
-            String result = null;
-
-            URL url = new URL(urlPath+"/1");
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setReadTimeout(10000 /* milliseconds */);
-            urlConnection.setConnectTimeout(10000 /* millisecods */);
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setRequestProperty("Content-Type", "application/json"); //set header
-            urlConnection.connect();
-
-            System.out.println("delete: "+urlConnection.getResponseCode());
-
-            if (urlConnection.getResponseCode() == 200) {
-                result = "Delete Successfully !";
-            } else {
-                result = "Delete failed !";
-            }
-
-            return result;
-        }
-    }
-
     class GetImageTask extends AsyncTask<String, Void, String> {
 
         ProgressDialog progressDialog;
@@ -798,7 +665,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     private void userLoginSuccess(final String id, final String name){
         Ion.with(context)
-                .load("http://143.248.36.220:3000/api/user/id")
+                .load("http://143.248.36.220:3000/api/user/"+id)
                 .asJsonObject()
                 .setCallback(new FutureCallback<JsonObject>() {
                     @Override
@@ -809,7 +676,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             json.addProperty("name", name);
 
                             Ion.with(context)
-                                    .load("http://example.com/post")
+                                    .load("http://143.248.36.220:3000/api/addUser")
                                     .setJsonObjectBody(json)
                                     .asJsonObject()
                                     .setCallback(new FutureCallback<JsonObject>() {
@@ -854,6 +721,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .asJsonArray();
     }
 
+
+
     private class Description extends AsyncTask<Void, Void, Void> {
 
         //진행바표시
@@ -893,14 +762,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     String[] menuRefined = refineString(menu);
                     ItemObject itemObject = makeObject(store, menuRefined);
                     totalArray.add(itemObject);
-
                     System.out.println(itemObject.getTitle());
-                    Map<String,ArrayList<android.example.cs496.ui.main.fragment4.Menu>> hm =itemObject.getMenus();
-                    for(Map.Entry<String,ArrayList<android.example.cs496.ui.main.fragment4.Menu>> entry : hm.entrySet()){
-
-                        System.out.println("key : " + entry.getKey() + " , value : " + entry.getValue());
-                    }
                 }
+
+                // 토탈어레이를 이용해서 DB에 없는 가게와 메뉴를 추가하고, totalArray의 ItemObject의 attr 결정
+//                initialization(totalArray);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -914,6 +781,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            progressDialog.dismiss();
         }
     }
+
+//    public void initialization(ArrayList<ItemObject> totalArray){
+//        for(int i=0; i<= totalArray.size()-1; i++){
+//            ItemObject itemObject = totalArray.get(i);
+//            String storeName = itemObject.getTitle();
+//            if(디비 안에 storeName 을 name으로 갖는 store가 없다면){
+////                //디비 안에 새로운 Store 객체 추가, 새로운 아이디, 비어 있는 scoreArray를 갖는다.
+////                // 그리고 item.setId(storeId)
+//                //storeId =totalArray.get(i).getId;
+//            }else{
+//                //
+//            }
+//            ArrayList<Menus> menusArrayList = totalArray.get(i).getMenus();
+//            for(int j=0; j<= menusArrayList.size()-1;j++ ){
+//                Menus menus = menusArrayList.get(j);
+//                ArrayList<android.example.cs496.ui.main.fragment4.Menu> menuArrayOfMenus = menus.getmMenu();
+//                for(int k=0; k<=menuArrayOfMenus.size()-1;k++){
+//                    android.example.cs496.ui.main.fragment4.Menu menu =menuArrayOfMenus.get(k);
+//                    String menuName = menu.getMenuName();
+//                    if(storeId를 갖는 store의 scoreArray에 menuName을 갖는 엘레멘트가 없다면 ){
+//                        //중복되지 않는 아이디인 menuId를 생성, votedNumber=0,totalNumber=0으로 갖는 엘레멘트 추가
+//                        //menu.setId, menu.setVotednumber, menuSetTotalNumber
+//                    }else{
+//                         //menu.setId, menu.setVotednumber, menuSetTotalNumber
+//                    }
+//
+//                }
+//            }
+//        }
+
+//    }
     public String[] refineString(String string){
         string = string.trim();
         if(string.startsWith("식당에서")){
@@ -932,18 +830,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+
+
     public ItemObject makeObject(String store, String[] list){
         int nowTag = -1;
 
         ArrayList<android.example.cs496.ui.main.fragment4.Menu> new_menus = new ArrayList<>();
         ItemObject result;
-        Map<String, ArrayList<android.example.cs496.ui.main.fragment4.Menu>> map = new HashMap<String, ArrayList<android.example.cs496.ui.main.fragment4.Menu>>();
+        ArrayList<Menus> map = new ArrayList<>();
         for(int i = 0; i<=list.length-1; i++){
             if(list[i].startsWith("<")||list[i].startsWith("(한식")||list[i].startsWith("(죽식")){ // 태그 일 때, 다른 태그도 있을 수 있음, 북측의 일품메뉴는 별로 시작함
                 if(nowTag != -1){
                     String key = list[nowTag];
                     ArrayList<android.example.cs496.ui.main.fragment4.Menu> value = new_menus;
-                    map.put(key, value);
+                    map.add(new Menus(key, value));
                 }
                 nowTag = i;
                 new_menus = new ArrayList<>();
@@ -954,7 +854,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     android.example.cs496.ui.main.fragment4.Menu menu = new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1);
                     new_menus = new ArrayList<>();
                     new_menus.add(menu);
-                    map.put(key, new_menus);
+                    map.add(new Menus(key, new_menus));
                 }
                 else {
                     new_menus.add(new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1));
@@ -964,7 +864,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(nowTag != -1){
             String key = list[nowTag];
             ArrayList<android.example.cs496.ui.main.fragment4.Menu> value = new_menus;
-            map.put(key, value);
+            map.add(new Menus(key, value));
         }
         result = new ItemObject(store, map);
         return result;
