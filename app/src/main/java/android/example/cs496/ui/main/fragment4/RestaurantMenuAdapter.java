@@ -16,11 +16,6 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
     public RestaurantMenuAdapter(String[] list){
         this.mList = list;
     }
-//    @NonNull
-//    @Override
-//    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//        return null;
-//    }
 
     @NonNull
     @Override

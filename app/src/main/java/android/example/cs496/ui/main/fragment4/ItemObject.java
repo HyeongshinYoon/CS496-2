@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class ItemObject implements Serializable {
     private String title;
+    private int id;
     private Map<String, ArrayList<Menu>> menus;
 
     public ItemObject(String title, Map<String, ArrayList<Menu>> menus){
@@ -17,6 +18,8 @@ public class ItemObject implements Serializable {
         return title;
     }
 
+    public int getId() { return id; }
+
     public Map<String, ArrayList<Menu>> getMenus(){
         return menus;
     }
@@ -24,6 +27,7 @@ public class ItemObject implements Serializable {
     public void setTitle(String title){
         this.title = title;
     }
+    public void setId(int id) { this.id = id; }
     public void setMenus(Map<String,ArrayList<Menu>> map){
         this.menus = map;
     }
