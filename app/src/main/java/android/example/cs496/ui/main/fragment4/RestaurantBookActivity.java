@@ -70,18 +70,10 @@ public class RestaurantBookActivity extends AppCompatActivity implements View.On
                         startActivityForResult(intent,0);
                     }
                 }));
-
-
     }
 
     public void onClick(View v){
         switch(v.getId()){
-//            case R.id.btn_edit: //수정 버튼을 누를 경우 -> RestaurantEditActivity
-//                Intent intent = new Intent(RestaurantBookActivity.this, RestaurantEditActivity.class);
-//                intent.putExtra("edit_btn",item );
-//                startActivityForResult(intent, 0);
-//
-//                break;
             case R.id.back: // 취소 버튼 누를 경우
                 setResult(0);
                 onBackPressed();

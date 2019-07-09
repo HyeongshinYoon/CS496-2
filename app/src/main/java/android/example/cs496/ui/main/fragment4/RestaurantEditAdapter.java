@@ -1,5 +1,6 @@
 package android.example.cs496.ui.main.fragment4;
 
+import android.example.cs496.MainActivity;
 import android.example.cs496.R;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,13 +34,20 @@ public class RestaurantEditAdapter extends RecyclerView.Adapter<RestaurantEditAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@OnBind");
-        mMenu =mMenus.getmMenu().get(position);
-        String menuName = mMenu.getMenuName();
+        mMenu = mMenus.getmMenu().get(position);
+        final String menuName = mMenu.getMenuName();
+
+        if(RestaurantEditActivity.miniUser.getScoreArray().get(menuName) != null){
+            double now_data = RestaurantEditActivity.miniUser.getScoreArray().get(menuName);
+            holder.ratingBar1.setRating((float)now_data);
+        }
+
         holder.tv_menu.setText(menuName);
         holder.ratingBar1.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-                //float v가 레이팅 점수
+                mMenu.setTotalScore(v);
+                RestaurantEditActivity.miniUser.insertScoreArray(menuName, (double)v);
             }
         });
     }

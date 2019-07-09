@@ -35,19 +35,21 @@ public class ItemObject implements Serializable {
     public double getMeanScore(){
         int sumVote =0;
         double sumTotal =0;
-        for (int i=0; i<=menus.size()-1; i++){
-            Menus menus1 = menus.get(i);
-            for(int j= 0; j<= menus1.getmMenu().size()-1; j++){
-                Menu menu = menus1.getmMenu().get(j);
-                double votedNumber =menu.getVotedNumber();
-                double totalNumber =menu.getTotalNumber();// total Score
-                if(votedNumber!=0){
-                    sumVote += votedNumber;
-                    sumTotal += totalNumber;
-                }
-            }
-        }
-        return sumTotal/sumVote;
+return 0;
+        //        for (int i=0; i<=menus.size()-1; i++){
+//            Menus menus1 = menus.get(i);
+//            for(int j= 0; j<= menus1.getmMenu().size()-1; j++){
+//                Menu menu = menus1.getmMenu().get(j);
+//                double votedNumber = menu.getVotedNumber();
+//                double totalNumber = menu.getTotalNumber();// total Score
+//                if(votedNumber!=0){
+//                    sumVote += votedNumber;
+//                    sumTotal += totalNumber;
+//                }
+//            }
+//        }
+//        if(sumVote == 0)return 0;
+//        return sumTotal/sumVote;
     }
 
 
