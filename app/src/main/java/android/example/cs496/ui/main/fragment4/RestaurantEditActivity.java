@@ -12,10 +12,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -41,22 +44,54 @@ public class RestaurantEditActivity extends AppCompatActivity implements View.On
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         storeTitle = (TextView) findViewById(R.id.restaurants_title);
-        setMenuTitle = (TextView) findViewById(R.id.set_menu_title);
+        setMenuTitle = (TextView) findViewById(R.id.set_menu_title); //태그 이름
         btn_back = (ImageButton) findViewById(R.id.back);
         btn_save = (ImageButton) findViewById(R.id.save);
         btn_back.setOnClickListener(this);
 
         Intent intent = getIntent();
         mMenus = (Menus) intent.getSerializableExtra("menus");
+        ArrayList<Menu> menuArrayList = mMenus.getmMenu();
         storeName = (String) intent.getStringExtra("store_name");
-        setMenuTitle.setText(mMenus.getmenusName());
         storeTitle.setText(storeName);
+        if(menuArrayList.size()==1){
+            setMenuTitle.setVisibility(View.GONE);
+        }else{
+            setMenuTitle.setText(mMenus.getmenusName());
+        }
+
+
+
+
+//        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//                //layoutManager.scrollToPositionWithOffset(0,0);
+//                //recyclerView.smoothScrollToPosition(0);
+//                recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView,new RecyclerView.State(), 0);
+//            }
+//        });
+//
+//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                if (dy==0){
+//                    fab.hide();
+//                }else {
+//                    fab.show();
+//                }
+//            }
+//        });
 
         adapter = new RestaurantEditAdapter(mMenus); //어댑터 고쳐야 ? 어댑터에서 Map Menus 받아오게 해야
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
 //        //layoutManager.scrollToPositionWithOffset(0,0);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+
+
     }
 
     @Override

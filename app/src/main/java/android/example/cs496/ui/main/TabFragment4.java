@@ -21,11 +21,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.Future;
@@ -55,6 +57,7 @@ public class TabFragment4 extends Fragment {
 
     private static Context context;
     RecyclerView recyclerView;
+    private FloatingActionButton fab;
 
     @Nullable
     @Override
@@ -71,6 +74,29 @@ public class TabFragment4 extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(myAdapter);
 
+        final FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                //layoutManager.scrollToPositionWithOffset(0,0);
+                //recyclerView.smoothScrollToPosition(0);
+                recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView,new RecyclerView.State(), 0);
+            }
+        });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy==0){
+                    fab.hide();
+                }else {
+                    fab.show();
+                }
+            }
+        });
+
+
         recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(context.getApplicationContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
@@ -83,5 +109,7 @@ public class TabFragment4 extends Fragment {
                     }
                 }));
         return v;
+
+
     }
 }

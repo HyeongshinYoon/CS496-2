@@ -20,7 +20,7 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
     private ArrayList<Menus> mMenus; // 메뉴들의 이름이 들어가 있는 스트링 배열
     private RestaurantSubAdapter adapter;
     private Context mContext;
-    private LinearLayout linearLayout;
+    private LinearLayout linearLayout, linearLayout2;
     public RestaurantMenuAdapter(ArrayList<Menus> menus){
         this.mMenus = menus;
     }
@@ -31,6 +31,7 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
         //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Oncreate");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sub_fragment4_holder_view, parent, false);
         linearLayout = (LinearLayout) view.findViewById(R.id.linear);
+        linearLayout2 = (LinearLayout) view.findViewById(R.id.linear2);
         return new ViewHolder(view);
     }
 
@@ -55,11 +56,16 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
         double totalScore=0;
         //가지고 온 태그와 그 메뉴 종류 어레이에 따른 if문 , 식당에서 메뉴를 업로드 하지 않을 때, 어레이의 크기가 1일 때(메뉴가 곧 태그일 때), 하나의 태그에 여러개의 메뉴가 있을 때
         if(menuArray.size()==1 && menuArray.get(0).getMenuName() == "식당에서 메뉴를 업로드하지 않았습니다."){
-            holder.textView_set_name.setVisibility((View.INVISIBLE)); // 다음 어댑터에서 가져오는 메뉴 점수 표시하지 않게 해야 // durltj
-            holder.textView_set_score.setVisibility((View.INVISIBLE));
+            holder.textView_set_name.setVisibility((View.GONE)); // 다음 어댑터에서 가져오는 메뉴 점수 표시하지 않게 해야 // durltj
+            holder.textView_set_score.setVisibility((View.GONE));
+            linearLayout.setVisibility((View.GONE));
         }else if(menuArray.size()==1){// 메뉴가 곧 태그일 때
-            holder.textView_set_name.setVisibility((View.INVISIBLE));
-            holder.textView_set_score.setVisibility((View.INVISIBLE));
+            holder.textView_set_name.setVisibility((View.GONE));
+            holder.textView_set_score.setVisibility((View.GONE));
+            linearLayout.setVisibility((View.GONE));
+
+
+
         }else{
             for(int i=0; i<= menuArray.size() -1; i++){
                 if(menuArray.get(i).getVotedNumber() !=0){
