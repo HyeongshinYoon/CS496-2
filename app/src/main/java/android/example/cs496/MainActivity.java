@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         facebook_login();
         new Description().execute(); // 받아오고 연결하는 과정
-
+        System.out.println(totalArray);
         //new GetDataTask().execute("http://143.248.36.218:3000/api/phones"); 전체 불러옴
         //new PostDataTask().execute("http://143.248.36.218:3000/api/addPhone"); 주소록 한 명 추가하기
         //new PutDataTask().execute("http://143.248.36.218:3000/api/updatePhone/:id"); 주소록 바뀐 사람 추가하기, id 기준
@@ -179,14 +179,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void initView(){
-
-        storeKey.put("동측 석박사 식당", "1");
-        storeKey.put("서측 학생 식당", "2");
-        storeKey.put("학부 식당", "3");
-        storeKey.put("교수회관(회원제 교직원)식당", "4");
-        storeKey.put("동측 교직원 식당", "5");
-        storeKey.put("문지 캠퍼스 구내 식당", "6");
-        storeKey.put("화암 기숙사 식당", "7");
 
         //Initializing the TabLayout;
         tabs = findViewById(R.id.tabs);
@@ -549,12 +541,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         System.out.println(result+" result");
 
                         JsonArray jsonArray = new JsonParser().parse(result).getAsJsonArray();
-                        JsonObject jsonObject = (JsonObject) jsonArray.get(0);
-                        if(jsonObject.get("id") == null){
+                        JsonObject jsonObject;
+                        if(jsonArray.size() < 1) {
                             JsonObject json = new JsonObject();
                             json.addProperty("id", id);
                             json.addProperty("name", name);
-
                             Ion.with(context)
                                     .load("http://143.248.36.220:3000/api/addUser")
                                     .setJsonObjectBody(json)
@@ -696,6 +687,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         protected void onPreExecute() {
             super.onPreExecute();
 
+            storeKey.put("동측 석박사 식당", "1");
+            storeKey.put("서측 학생 식당", "2");
+            storeKey.put("학부 식당", "3");
+            storeKey.put("교수회관(회원제 교직원)식당", "4");
+            storeKey.put("동측 교직원 식당", "5");
+            storeKey.put("문지 캠퍼스 구내 식당", "6");
+            storeKey.put("화암 기숙사 식당", "7");
+            storeKey.put("태울관 뚝배기", "8");
+
             //진행다일로그 시작
 //            progressDialog = new ProgressDialog(context); // 문제 생기면 바로 지우기
 //            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -726,16 +726,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     String[] menuRefined = refineString(menu);
 
                     String store_id = storeKey.get(store);
-                    if(store_id == null)continue;
                     GetStore(store);
-                    ItemObject itemObject = makeObject(store, store_id, menuRefined);
+                    ItemObject itemObject = makeObject(store, menuRefined);
                     itemObject.setId(Integer.parseInt(store_id));
                     totalArray.add(itemObject);
                     System.out.println(itemObject.getTitle());
                 }
 
                 // 토탈어레이를 이용해서 DB에 없는 가게와 메뉴를 추가하고, totalArray의 ItemObject의 attr 결정
-//                initialization(totalArray);
+//
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -746,31 +745,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(Void result) {
             //ArraList를 인자로 해서 어답터와 연결한다.
-
+            initialization(totalArray);
 //            progressDialog.dismiss();
         }
     }
 
-//    public void initialization(ArrayList<ItemObject> totalArray){
-//        for(int i=0; i<= totalArray.size()-1; i++){
-//            ItemObject itemObject = totalArray.get(i);
-//            String storeName = itemObject.getTitle();
-//            GetStore(storeName);
-//            itemObject.setId(now_id);
-//            ArrayList<Menus> menusArrayList = totalArray.get(i).getMenus();
-//            for(int j=0; j<= menusArrayList.size()-1;j++ ){
-//                Menus menus = menusArrayList.get(j);
-//                ArrayList<android.example.cs496.ui.main.fragment4.Menu> menuArrayOfMenus = menus.getmMenu();
-//                for(int k=0; k<=menuArrayOfMenus.size()-1;k++){
-//                    android.example.cs496.ui.main.fragment4.Menu menu =menuArrayOfMenus.get(k);
-//                    String menuName = menu.getMenuName();
-//                    getDish(menuName, now_id);
-//                    menu = now_menu;
-//                }
-//            }
-//        }
-//
-//    }
+    public void initialization(ArrayList<ItemObject> totalArray){
+        for(int i = 0; i<= totalArray.size() - 1; i++){
+            ItemObject itemObject = totalArray.get(i);
+            String storeName = itemObject.getTitle();
+            itemObject.setId(now_id);
+            ArrayList<Menus> menusArrayList = totalArray.get(i).getMenus();
+            for(int j=0; j<= menusArrayList.size()-1;j++ ){
+                Menus menus = menusArrayList.get(j);
+                ArrayList<android.example.cs496.ui.main.fragment4.Menu> menuArrayOfMenus = menus.getmMenu();
+                for(int k=0; k<=menuArrayOfMenus.size()-1;k++){
+                    android.example.cs496.ui.main.fragment4.Menu menu =menuArrayOfMenus.get(k);
+                    String menuName = menu.getMenuName();
+                    getDish(storeName, menuName, i, j, k);
+                }
+            }
+        }
+    }
 
     public String[] refineString(String string){
         string = string.trim();
@@ -818,7 +814,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return last_menu_id - 1;
     }
 
-    public void getDish(final String menu_name, final String store){
+    public void getDish(final String menu_name, final String store, final int i, final int j, final int k){
 
         final String id = storeKey.get(store);
         JsonObject json = new JsonObject();
@@ -832,38 +828,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setCallback(new FutureCallback<String>() {
                     @Override
                     public void onCompleted(Exception e, String result) {
-
-                        System.out.println(result);
-
                         JsonArray jsonArray = new JsonParser().parse(result).getAsJsonArray();
-//                    System.out.println(jsonArray);
-//                    if(jsonArray.size() == 0){
-//                        now_menu = new android.example.cs496.ui.main.fragment4.Menu(menu_name, addMenu(menu_name, store_id), 0, 0);
-//                    }
-//                    else {
-
-                        JsonObject jsonObject = (JsonObject) jsonArray.get(0);
-                        if (jsonObject.getAsJsonArray("scoreArray").size() == 0) {
-                            try {
-                                now_menu = new android.example.cs496.ui.main.fragment4.Menu(menu_name, addMenu(menu_name, id), 0, 0);
-                            } catch (JSONException e1) {
-                                e1.printStackTrace();
+                        JsonObject jsonObject;
+                        if(jsonArray.size() >= 1){
+                            jsonObject = (JsonObject) jsonArray.getAsJsonObject();
+                            if (jsonObject.getAsJsonArray("scoreArray").size() == 0) {
+                                try {
+                                    now_menu = new android.example.cs496.ui.main.fragment4.Menu(menu_name, addMenu(menu_name, id), 0, 0);
+                                } catch (JSONException e1) {
+                                    e1.printStackTrace();
+                                }
+                            } else {
+                                JsonArray ja = jsonObject.getAsJsonArray("scoreArray");
+                                JsonObject jo = (JsonObject) ja.get(0);
+                                int menu_id = jo.get("menuId").getAsInt();
+                                int total_score = jo.get("totalScore").getAsInt();
+                                int voted_number = jo.get("votedNumber").getAsInt();
+                                now_menu = new android.example.cs496.ui.main.fragment4.Menu(menu_name, menu_id, voted_number, total_score);
                             }
-                        } else {
-                            JsonArray ja = jsonObject.getAsJsonArray("scoreArray");
-                            JsonObject jo = (JsonObject) ja.get(0);
-                            int menu_id = jo.get("menuId").getAsInt();
-                            int total_score = jo.get("totalScore").getAsInt();
-                            int voted_number = jo.get("votedNumber").getAsInt();
-                            now_menu = new android.example.cs496.ui.main.fragment4.Menu(menu_name, menu_id, voted_number, total_score);
+                            totalArray.get(i).getMenus().get(j).getmMenu().get(k).setMenu(now_menu);
                         }
+
 
                     }
                 });
-
     }
 
-    public ItemObject makeObject(String store, String store_id, String[] list){
+    public ItemObject makeObject(String store, String[] list){
         int nowTag = -1;
 
         ArrayList<android.example.cs496.ui.main.fragment4.Menu> new_menus = new ArrayList<>();
@@ -882,22 +873,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             else {
                 if(nowTag == -1){
                     String key = list[i];// 맵에 더하기
-
-                    now_menu = null;
-//                    android.example.cs496.ui.main.fragment4.Menu menu = new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1);
+                    android.example.cs496.ui.main.fragment4.Menu menu = new android.example.cs496.ui.main.fragment4.Menu(list[i],Integer.parseInt(storeKey.get(store)),0,0);
 
                     new_menus = new ArrayList<>();
-                    getDish(list[i], store);
-                    new_menus.add(now_menu);
+                    new_menus.add(menu);
                     map.add(new Menus(key, new_menus));
                 }
                 else {
-
-                    now_menu = null;
-                    getDish(list[i], store);
-                    new_menus.add(now_menu);
-//                    new_menus.add(new android.example.cs496.ui.main.fragment4.Menu(list[i],0,1,1));
-
+                    new_menus.add(new android.example.cs496.ui.main.fragment4.Menu(list[i],Integer.parseInt(storeKey.get(store)),0,0));
                 }
             }
         }

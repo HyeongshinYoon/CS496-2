@@ -72,6 +72,7 @@ public class TabFragment4 extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(myAdapter);
 
+
         recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(context.getApplicationContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
@@ -79,6 +80,7 @@ public class TabFragment4 extends Fragment {
                         Intent intent =new Intent(context, RestaurantBookActivity.class);
                         ItemObject item = totalArray.get(position); // 아이템 오브젝트 하나
                         intent.putExtra("store_select", item);
+                        System.out.println(item + "I'm a item");
                         startActivityForResult(intent,0);//
 
                     }

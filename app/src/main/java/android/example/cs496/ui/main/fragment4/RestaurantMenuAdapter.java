@@ -62,6 +62,7 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
             holder.textView_set_score.setVisibility((View.INVISIBLE));
         }else{
             for(int i=0; i<= menuArray.size() -1; i++){
+                System.out.println(position);
                 if(menuArray.get(i).getVotedNumber() !=0){
                     menuNumber+=1;
                     totalScore += menuArray.get(i).getMeanScore();

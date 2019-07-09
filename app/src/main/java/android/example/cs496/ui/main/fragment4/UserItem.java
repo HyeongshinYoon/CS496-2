@@ -33,4 +33,9 @@ public class UserItem implements Serializable {
     public void setUserId(String userId){this.userId = userId;}
     public void setScoreArray(Map<String, Double> scoreArray){this.scoreArray = scoreArray;}
 
+    public void insertScoreArray(String s, Double d){
+        this.scoreArray.remove(s);
+        this.scoreArray.put(s, d);
+    }
+
 }

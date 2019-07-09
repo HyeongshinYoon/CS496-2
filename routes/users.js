@@ -75,15 +75,11 @@ exports.addUserStar = function(req, res){
 
 exports.updateUser = function(req, res){
 
-  User.update({id:req.params.id}, {
-    id:req.body.id,
-    name:req.body.name,
-    scoreArray:req.body.scoreArray,
-  }, function(err, num, raw){
+  User.findOneAndUpdate({id:req.params.id}, {$push: {"scoreArray": req.body}}, async function(err, user){
     if(err){
       res.send(err)
     }
-    res.json(num);
+    res.json(user);
   });
 }
 
